@@ -1,7 +1,8 @@
 using UnityEngine;
+using Photon.Pun;
 
 [RequireComponent(typeof(Animator))]
-public class AnimationHandler : MonoBehaviour
+public class AnimationHandler : MonoBehaviourPun
 {
     // 
     private Animator _animator;
@@ -11,14 +12,32 @@ public class AnimationHandler : MonoBehaviour
         _animator = GetComponent<Animator>();
     }
 
+    [PunRPC]
+    private void RPCSetBool(string flag, bool value)
+    {
+        _animator.SetBool(flag, value);
+    }
+
+    [PunRPC]
+    private void RPCSetInteger(string parameter, int value)
+    {
+        _animator.SetInteger(parameter, value);
+    }
+
     public bool GetBool(string flag)
         => _animator.GetBool(flag);
 
     public void SetBool(string flag, bool value)
-        => _animator?.SetBool(flag, value);
+    {
+        if (!photonView.IsMine) return;
+        photonView.RPC(nameof(RPCSetBool), RpcTarget.All, flag, value);
+    }
 
     public void SetInteger(string parameter, int value)
-        => _animator.SetInteger(parameter, value);
+    {
+        if (!photonView.IsMine) return;
+        photonView.RPC(nameof(RPCSetInteger), RpcTarget.All, parameter, value);
+    }
 
     public (bool, float) CheckCurrentState(string stateName)
     {

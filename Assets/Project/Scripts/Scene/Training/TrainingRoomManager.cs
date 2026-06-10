@@ -6,11 +6,11 @@ public class TrainingRoomManager : MonoBehaviour
     [SerializeField] private Character _characterA;
     [SerializeField] private Character _characterB;
 
-    private TempGameMaster _gameMaster;
+    private RoomInitializer _gameMaster;
 
     private void Awake()
     {
-        _gameMaster = GetComponent<TempGameMaster>();
+        _gameMaster = GetComponent<RoomInitializer>();
 
         if (_gameMaster != null && _characterA != null && _characterB != null)
         {

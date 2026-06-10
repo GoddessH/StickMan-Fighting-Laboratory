@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class TempGameMaster : Singleton<TempGameMaster>
+public class RoomInitializer : Singleton<RoomInitializer>
 {
     // 
     private Stack<Character> _playerStack = new Stack<Character>();

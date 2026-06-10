@@ -6,11 +6,6 @@ public class CharacterSpawner : Singleton<CharacterSpawner>
     //
     private const string _characterName = "Player";
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     private void Start()
     {
         SpawnCharacter();

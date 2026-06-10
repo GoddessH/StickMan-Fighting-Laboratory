@@ -1,7 +1,9 @@
+using Photon.Pun;
 using System;
+using UnityEditor;
 using UnityEngine;
 
-public class StateController: MonoBehaviour, IStateRequestReceiver
+public class StateController: MonoBehaviourPun, IStateRequestReceiver
 {
     //
     #region Supporter
@@ -33,6 +35,8 @@ public class StateController: MonoBehaviour, IStateRequestReceiver
     #region Explicit Implement IStateRequestReceiver
     void IStateRequestReceiver.ReceiveStateRequest(StateType type)
     {
+        if (photonView != null && !photonView.IsMine) return;
+
         State currentState = _stateLibrary[_stateMachine.CurrentStateType];
         State nextState = _stateLibrary[type];
 

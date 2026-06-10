@@ -18,7 +18,7 @@ public class PlayerMovementInput : MovementInput
     #region Implement MovementInput
     public override Vector2 ProvideMovementInput()
     {
-        //if (_ownerPhotonView != null && !_ownerPhotonView.IsMine) return Vector2.zero;
+        if (_ownerPhotonView != null && !_ownerPhotonView.IsMine) return Vector2.zero;
         if (_movementAction == null) return Vector2.zero;
         return _movementAction.ReadValue<Vector2>();
     }

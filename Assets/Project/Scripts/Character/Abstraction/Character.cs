@@ -26,6 +26,6 @@ public class Character : MonoBehaviourPun/*, IPunObservable*/
     [PunRPC]
     private void RegistRoom()
     {
-        TempGameMaster.Instance.AddPlayer(this);
+        RoomInitializer.Instance.AddPlayer(this);
     }
 }
