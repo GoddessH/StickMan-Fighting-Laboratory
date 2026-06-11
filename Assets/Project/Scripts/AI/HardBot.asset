@@ -16,13 +16,15 @@ MonoBehaviour:
   attackRange: 4.5
   threatRange: 2.5
   reactionDelay: 0.15
-  attackCooldown: 0.8
+  attackCooldown: 1
   blockDuration: 1.5
   retreatDuration: 0.4
-  attackWeight: 8
-  blockWeight: 7
-  retreatWeight: 3
-  idleWeight: 0.5
+  singleAttackDuration: 0.333
+  maxComboHits: 3
+  attackWeight: 5.86
+  blockWeight: 5.86
+  retreatWeight: 5.62
+  idleWeight: 1.87
   flyThreshold: 0.3
   maxVerticalChase: 5
   description: 
