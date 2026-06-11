@@ -399,7 +399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
-  _config: {fileID: 11400000, guid: 7a08d936c4b50c14797cfd25791e2d5b, type: 2}
+  _config: {fileID: 11400000, guid: 32d4f38017ea3c3488ab93d6e4622167, type: 2}
   _playerHitBoxTag: PlayerHitBox
   _currentAIState: 0
 --- !u!114 &8467658984099497892
