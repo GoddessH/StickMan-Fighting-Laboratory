@@ -10,11 +10,12 @@ public class NextSceneLoader : MonoBehaviour
     #region Call in Button's event
     public void LoadNextScene()
     {
-        int currentSceneIndex = (int)_nextScene;
+        int nextSceneIndex = (int)_nextScene;
         int sceneCount = SceneManager.sceneCountInBuildSettings;
-        if (currentSceneIndex < 0 || currentSceneIndex >= sceneCount) return;
+        if (nextSceneIndex < 0 || nextSceneIndex >= sceneCount) return;
 
-        PhotonNetwork.LoadLevel((int)_nextScene);
+        if (_nextScene == SceneType.Trainning) SceneManager.LoadSceneAsync(nextSceneIndex);
+        else PhotonNetwork.LoadLevel(nextSceneIndex);
     }
     #endregion
 }

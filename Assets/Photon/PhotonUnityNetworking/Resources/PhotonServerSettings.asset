@@ -45,6 +45,8 @@ MonoBehaviour:
   - RPCSetBool
   - RPCSetInteger
   - RPCRegistRoom
+  - RPCReduceHealth
+  - RPCOnChangeHeatlh
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

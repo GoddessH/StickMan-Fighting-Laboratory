@@ -604,10 +604,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 793054721775891907, guid: 4e35236e3c931884fa332c271d7f1d01, type: 3}
-      propertyPath: sceneViewId
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3344395903890743326, guid: 4e35236e3c931884fa332c271d7f1d01, type: 3}
       propertyPath: m_Name
       value: LocalPlayer

@@ -22,14 +22,22 @@ public class UIInMatchTop : MonoBehaviour
         foreach(var fighter in fighterStack)
         {
             int panelIndex = 0;
-            if (fighter.photonView.OwnerActorNr != PhotonNetwork.CurrentRoom.MasterClientId)
-            {
-                fighter.gameObject.name += "2";
-                panelIndex = 1;
-            }
-            else fighter.gameObject.name += "1";
 
-            _fighterPanels[panelIndex].ConnectToFighter(fighter.gameObject.name, fighter.GetComponent<HealthManager>());
+            if (fighter.GetComponent<RoomRegister>() != null)
+            {
+                if (fighter.photonView.OwnerActorNr != PhotonNetwork.CurrentRoom.MasterClientId)
+                {
+                    fighter.gameObject.name += "2";
+                    panelIndex = 1;
+                }
+                else fighter.gameObject.name += "1";
+            }
+            else
+            {
+                if (fighter.gameObject.name.Contains("Dummy")) panelIndex = 1;
+            }
+
+                _fighterPanels[panelIndex].ConnectToFighter(fighter.gameObject.name, fighter.GetComponent<HealthManager>());
             //Debug.Log($"{fighter.photonView.ViewID}: {_fighterPanels[panelIndex].gameObject.name}");
         }
     }
