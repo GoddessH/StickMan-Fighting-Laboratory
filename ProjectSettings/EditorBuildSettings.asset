@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Project/Scenes/Ranking.unity
     guid: 2eb5f7d64167f644785bfa1b80d94f40
+  - enabled: 1
+    path: Assets/Project/Scenes/PvE.unity
+    guid: a37669da902790a49bc58e34d2c69e5e
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: cdbb99df1f87f3e44988c41252bcf697, type: 3}

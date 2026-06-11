@@ -5,5 +5,6 @@ public enum StateType
     Move = 1,
     Attack = 2, 
     Hurt = 3, 
-    Dead = 4
+    Dead = 4,
+    Block = 5
 }

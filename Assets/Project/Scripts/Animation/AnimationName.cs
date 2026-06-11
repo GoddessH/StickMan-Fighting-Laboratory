@@ -10,4 +10,5 @@ public static class AnimationName
 
     public static string Fly { get; private set; } = "isFly";
     public static string Fall { get; private set; } = "isFall";
+    public static string Block { get; private set; } = "isBlock";
 }
