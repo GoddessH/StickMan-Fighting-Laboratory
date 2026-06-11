@@ -2,31 +2,20 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UICharacterHealthbar : MonoBehaviour
+public class UIFighterHealthbar : MonoBehaviour
 {
     //
-    [SerializeField] private HealthManager _ownerHealthManager;
     [SerializeField] private Image _healthFill;
     [SerializeField] private Image _healthTrail;
     [SerializeField] private float _changeHealthDuration;
     [SerializeField] private float _trailDelayTime;
 
+    private HealthManager _ownerHealthManager;
+
     private void Awake()
     {
-
         _healthFill.fillAmount = 1;
         _healthTrail.fillAmount = 1;
-    }
-
-    private void OnEnable()
-    {
-        if (_ownerHealthManager == null) return;
-        _ownerHealthManager.OnChangeHealth += OnUpdateHealthFill;
-    }
-    private void OnDisable()
-    {
-        if (_ownerHealthManager == null) return;
-        _ownerHealthManager.OnChangeHealth -= OnUpdateHealthFill;
     }
 
     private void OnDestroy()
@@ -51,8 +40,17 @@ public class UICharacterHealthbar : MonoBehaviour
         healthFillSequence.Play();
     }
 
-    public void SetHealthManager()
+    public void ConnectToOwner(HealthManager healthManager)
     {
+        if (healthManager == null) return;
+        _ownerHealthManager = healthManager;
+        _ownerHealthManager.OnChangeHealth += OnUpdateHealthFill;
+    }
 
+    public void DisconnectToOwner()
+    {
+        if (_ownerHealthManager == null) return;
+
+        _ownerHealthManager.OnChangeHealth -= OnUpdateHealthFill;
     }
 }

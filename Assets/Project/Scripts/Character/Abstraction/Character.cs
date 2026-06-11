@@ -14,18 +14,13 @@ public class Character : MonoBehaviourPun/*, IPunObservable*/
     private void Awake()
     {
         _stateController = GetComponent<StateController>();
+        
+        RoomRegister roomRegister = GetComponent<RoomRegister>();
+        if (roomRegister != null) roomRegister.RegistRoom(this);
     }
 
     private void Start()
     {
-        //photonView.RPC(nameof(RegistRoom), RpcTarget.AllViaServer);
         _stateController.Init(gameObject);
-    }
-
-
-    [PunRPC]
-    private void RegistRoom()
-    {
-        RoomInitializer.Instance.AddPlayer(this);
     }
 }
