@@ -37,7 +37,7 @@ public class UIInMatchTop : MonoBehaviour
                 if (fighter.gameObject.name.Contains("Dummy")) panelIndex = 1;
             }
 
-                _fighterPanels[panelIndex].ConnectToFighter(fighter.gameObject.name, fighter.GetComponent<HealthManager>());
+            _fighterPanels[panelIndex].ConnectToFighter(fighter.gameObject.name, fighter.GetComponent<HealthManager>(), fighter.GetComponent<ManaManager>());
             //Debug.Log($"{fighter.photonView.ViewID}: {_fighterPanels[panelIndex].gameObject.name}");
         }
     }

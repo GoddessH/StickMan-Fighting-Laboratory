@@ -58,6 +58,7 @@ GameObject:
   - component: {fileID: 5553399278370954765}
   - component: {fileID: 3140206292288713531}
   - component: {fileID: 4294418765833022213}
+  - component: {fileID: 2958892009886002591}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -406,6 +407,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _blockFlashPrefab: {fileID: 8690950337773083281, guid: 803b96fa8ebd5a749bdf32bd0e553139, type: 3}
   _blockFlashSpawnPoint: {fileID: 5042310921687211816}
+--- !u!114 &2958892009886002591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338028093530308318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9001f2ad1ef99014183e5a0fc65ef423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxMana: 200
+  _regenManaPerHit: 10
 --- !u!1 &4071623425003871092
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterInput))]
-public class AttackController : MonoBehaviour, IProvider<Func<bool>>
+public class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDealerEvent
 {
     //
     [SerializeField] private AttackHitBox _attackHitBox;
@@ -10,6 +10,8 @@ public class AttackController : MonoBehaviour, IProvider<Func<bool>>
 
     private IStateRequestReceiver _requestReceiver;
     private AttackInput _attackInput;
+
+    private Action _onHit;
 
     #region Supporter
     private StateRequester _attackRequester;
@@ -38,7 +40,13 @@ public class AttackController : MonoBehaviour, IProvider<Func<bool>>
 
     #region Call in animation's event
     private void DoDamages()
-        => _attackHitBox?.DetectTarget()?.TakeDamages(_attackDamages);
+    {
+        HurtPoint hurtPoint = _attackHitBox?.DetectTarget();
+
+        if (hurtPoint == null) return;
+        hurtPoint.TakeDamages(_attackDamages);
+        _onHit?.Invoke();
+    }
     #endregion
 
     #region Implement IProvider
@@ -49,4 +57,14 @@ public class AttackController : MonoBehaviour, IProvider<Func<bool>>
         => _attackInput.Provide();
     #endregion
 
+    #region Explicit implement IDamageDealerEvent
+    void IDamageDealerEvent.SubscribeEvent(Action subscriber)
+    {
+        _onHit += subscriber;
+    }
+    void IDamageDealerEvent.UnsubscribeEvent(Action subscriber)
+    {
+        _onHit -= subscriber;
+    }
+    #endregion
 }
