@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerAttackInput : AttackInput
+public class PlayerAttackInput : EventInput
 {
     //
     private PhotonView _ownerPhotonView;
@@ -31,7 +31,7 @@ public class PlayerAttackInput : AttackInput
     }
 
     #region Implement AttackInput
-    public override void SusbscribeAttackAction(Action subscriber)
+    public override void SubscribeInputAction(Action subscriber)
     {
         if (_attackAction == null) return;
         _cachedSubscriber = subscriber;
@@ -39,7 +39,7 @@ public class PlayerAttackInput : AttackInput
         _attackAction.started += OnAttack;
     }
 
-    public override void UnsubscribeAttackAction()
+    public override void UnsubscribeInputAction()
     {
         if (_attackAction == null) return;
         _attackAction.started -= OnAttack;

@@ -1,6 +1,6 @@
 using System;
 
-public class BotBlockInput : BlockInput
+public class BotBlockInput : EventInput
 {
     private bool _isHolding;
 
@@ -23,12 +23,12 @@ public class BotBlockInput : BlockInput
     }
 
     #region Implement BlockInput
-    public override void SubscribeBlockAction(Action subscriber)
+    public override void SubscribeInputAction(Action subscriber)
     {
         _cachedSubscriber = subscriber;
     }
 
-    public override void UnsubscribeBlockAction()
+    public override void UnsubscribeInputAction()
     {
         _cachedSubscriber = null;
     }

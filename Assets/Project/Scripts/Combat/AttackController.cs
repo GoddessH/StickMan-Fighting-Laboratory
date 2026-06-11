@@ -9,7 +9,7 @@ public class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDea
     [SerializeField] private float _attackDamages;
 
     private IStateRequestReceiver _requestReceiver;
-    private AttackInput _attackInput;
+    private EventInput _attackInput;
 
     private Action _onHit;
 
@@ -30,10 +30,10 @@ public class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDea
     }
 
     private void OnEnable()
-        => _attackInput.SusbscribeAttackAction(Attack);
+        => _attackInput.SubscribeInputAction(Attack);
 
     private void OnDisable() 
-        => _attackInput.UnsubscribeAttackAction();
+        => _attackInput.UnsubscribeInputAction();
 
     private void Attack() 
         => _attackRequester?.RequestState(_requestReceiver);
