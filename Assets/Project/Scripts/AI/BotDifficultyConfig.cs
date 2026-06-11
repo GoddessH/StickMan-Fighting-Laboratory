@@ -22,6 +22,14 @@ public class BotDifficultyConfig : ScriptableObject
     [Tooltip("Thời gian lùi (Retreat) trước khi tiếp cận lại")]
     public float retreatDuration = 0.6f;
 
+    [Header("Attack Combo")]
+    [Tooltip("Thời lượng mỗi animation tấn công (giây). Đo từ Animator của nhân vật.")]
+    public float singleAttackDuration = 0.333f;
+
+    [Tooltip("Số đòn combo tối đa bot sẽ thực hiện. Easy=1, Medium=2, Hard=3")]
+    [Range(1, 3)]
+    public int maxComboHits = 2;
+
     [Header("Behavior Weights")]
     [Tooltip("Trọng số tấn công khi vào range")]
     [Range(0f, 10f)]

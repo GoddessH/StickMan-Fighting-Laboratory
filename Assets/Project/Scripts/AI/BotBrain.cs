@@ -28,6 +28,7 @@ public class BotBrain : MonoBehaviour
     private float _blockTimer;
     private float _retreatTimer;
     private float _reactionTimer;
+    private float _attackSequenceTimer;
 
     // ---- Pending transition (chờ reaction delay) ----
     private AIState? _pendingState;
@@ -116,6 +117,7 @@ public class BotBrain : MonoBehaviour
             !_pendingState.HasValue)
         {
             AIState reaction = PickThreatReaction();
+            Debug.Log($"[BotBrain] Threat detected! → {reaction}");
             ScheduleTransition(reaction);
             return;
         }
@@ -198,9 +200,15 @@ public class BotBrain : MonoBehaviour
     private void HandleAttack()
     {
         _botInput.BotMovement.SetDirection(Vector2.zero);
-        _botInput.BotAttack.TriggerAttack();
-        _attackTimer = _config.attackCooldown;
-        ScheduleTransition(AIState.Approach);
+
+        // Duy trì _isPressed = true để AttackState có thể tiến combo
+        // trong khoảng thời gian = số đòn muốn đánh × độ dài 1 animation
+        if (_attackSequenceTimer > 0)
+        {
+            _attackSequenceTimer -= Time.deltaTime;
+            _botInput.BotAttack.TriggerAttack(); // giữ input (Clear() sẽ reset mỗi frame, gọi lại để duy trì)
+        }
+        // Khi _attackSequenceTimer = 0: _isPressed = false → AttackState tự kết thúc sau đòn cuối
     }
 
     private void HandleBlock()
@@ -253,15 +261,33 @@ public class BotBrain : MonoBehaviour
     {
         if (_pendingState == nextState) return;
         _pendingState = nextState;
-        _reactionTimer = _config.reactionDelay;
+
+        // Phản xạ tự vệ (Block/Retreat) nhanh hơn ~4x so với di chuyển chủ động
+        if (nextState == AIState.Block || nextState == AIState.Retreat)
+            _reactionTimer = _config.reactionDelay * 0.25f;
+        else
+            _reactionTimer = _config.reactionDelay;
     }
 
     private void ExecuteTransition(AIState nextState)
     {
         _currentAIState = nextState;
+        Debug.Log($"[BotBrain] → {nextState}");
 
         switch (nextState)
         {
+            case AIState.Attack:
+                _botInput.BotMovement.SetDirection(Vector2.zero);
+                // Chọn số đòn combo ngẫu nhiên từ 1 đến maxComboHits
+                int comboHits = Random.Range(1, _config.maxComboHits + 1);
+                _attackSequenceTimer = comboHits * _config.singleAttackDuration;
+                _attackTimer = _config.attackCooldown;
+                _botInput.BotAttack.TriggerAttack(); // kích hoạt đòn đầu tiên
+                // Lập lịch quay về Approach sau reactionDelay
+                // (reactionDelay đóng vai trò "buffer" sau khi sequence kết thúc)
+                ScheduleTransition(AIState.Approach);
+                break;
+
             case AIState.Block:
                 _blockTimer = _config.blockDuration;
                 _botInput.BotBlock.StartBlock();
