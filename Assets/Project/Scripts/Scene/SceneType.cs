@@ -7,7 +7,8 @@ public enum SceneType
     StoryMode = 1,
     Trainning = 2,
     Ranking = 3, 
-    PlayWithFriend = 4,
-    Chaos = 5,
-    ClimpTower = 6
+    PvE = 4,
+    PlayWithFriend = 5,
+    Chaos = 6,
+    ClimpTower = 7
 }

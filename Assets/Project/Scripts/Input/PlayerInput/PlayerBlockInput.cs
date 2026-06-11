@@ -18,7 +18,7 @@ public class PlayerBlockInput : BlockInput
     private void OnBlock(InputAction.CallbackContext ctx)
     {
         if (_ownerPhotonView != null && !_ownerPhotonView.IsMine) return;
-
+        Debug.Log("Block Input Detected");
         _cachedSubscriber?.Invoke();
     }
 

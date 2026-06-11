@@ -8,12 +8,46 @@ public abstract class CharacterInput: MonoBehaviourPun
     protected AttackInput _attackInput;
     protected BlockInput _blockInput;
 
-    public MovementInput MovementInput => _movementInput;
-    public AttackInput AttackInput => _attackInput;
-    public BlockInput BlockInput => _blockInput;
+    private bool _hasSetup = false;
+
+    public MovementInput MovementInput 
+    {
+        get
+        {
+            EnsureSetup();
+            return _movementInput;
+        }
+    }
+
+    public AttackInput AttackInput 
+    {
+        get
+        {
+            EnsureSetup();
+            return _attackInput;
+        }
+    }
+
+    public BlockInput BlockInput 
+    {
+        get
+        {
+            EnsureSetup();
+            return _blockInput;
+        }
+    }
 
     protected virtual void Awake()
-        => SetupInput();
+        => EnsureSetup();
+
+    private void EnsureSetup()
+    {
+        if (!_hasSetup)
+        {
+            SetupInput();
+            _hasSetup = true;
+        }
+    }
 
     protected abstract void SetupInput();
 }
