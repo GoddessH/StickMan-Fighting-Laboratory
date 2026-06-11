@@ -1,16 +1,7 @@
 using UnityEngine;
 
-public class BotController : MonoBehaviour
+[RequireComponent(typeof(BotInput), typeof(BotBrain))]
+public class BotController : Character
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //
 }

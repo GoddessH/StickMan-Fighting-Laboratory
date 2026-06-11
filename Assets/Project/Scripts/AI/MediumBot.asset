@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99ab3451541b0a0419d3f6afe56d61fe, type: 3}
+  m_Name: MediumBot
+  m_EditorClassIdentifier: 
+  detectRange: 10
+  attackRange: 3.2
+  threatRange: 3.5
+  reactionDelay: 0.4
+  attackCooldown: 1.5
+  blockDuration: 1
+  retreatDuration: 0.6
+  attackWeight: 5
+  blockWeight: 3
+  retreatWeight: 3
+  idleWeight: 2
+  flyThreshold: 0.5
+  maxVerticalChase: 5
+  description: 
