@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class HealthManager : MonoBehaviour, IProvider<Action<float>>
     // 
     [SerializeField] private float _maxHealth;
 
+    private PhotonView _photonView;
     private Action _onLoseAllHealth;
 
     public float CurrentHealth { get; private set; }
@@ -18,6 +20,7 @@ public class HealthManager : MonoBehaviour, IProvider<Action<float>>
 
     private void Awake()
     {
+        _photonView = GetComponent<PhotonView>();
         DeadController deadController = GetComponent<DeadController>();
         if (deadController != null) _onLoseAllHealth = deadController.RequestDeadState;
 
@@ -37,9 +40,17 @@ public class HealthManager : MonoBehaviour, IProvider<Action<float>>
         if (CurrentHealth <= 0) return;
 
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
-        OnChangeHealth?.Invoke(CurrentHealth, _maxHealth);
+
+        if (_photonView == null) RPCOnChangeHeatlh(CurrentHealth, _maxHealth);
+        else _photonView.RPC(nameof(RPCOnChangeHeatlh), RpcTarget.All, CurrentHealth, _maxHealth);
 
         if (CurrentHealth <= 0) _onLoseAllHealth?.Invoke();
+    }
+
+    [PunRPC]
+    private void RPCOnChangeHeatlh(float currentHealth, float maxHealth)
+    {
+        OnChangeHealth?.Invoke(currentHealth, maxHealth);
     }
 
     #region Implement IProvider
