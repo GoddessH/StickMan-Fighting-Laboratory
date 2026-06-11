@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68e9cec875a59504b8949adb3570ed5c, type: 3}
   m_Name: BlockStateSO
   m_EditorClassIdentifier: 
-  _type: 0
+  _type: 5
