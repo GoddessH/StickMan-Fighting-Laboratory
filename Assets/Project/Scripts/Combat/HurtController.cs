@@ -9,6 +9,8 @@ public class HurtController : MonoBehaviour, IProvider<Func<float>>
     private IStateRequestReceiver _requestReceiver;
     private float _cachedLastDamages;
 
+    private BlockController _blockController;
+
     #region Supporter
     private StateRequester _hurtRequester;
     #endregion
@@ -18,10 +20,17 @@ public class HurtController : MonoBehaviour, IProvider<Func<float>>
         _requestReceiver = GetComponent<IStateRequestReceiver>();
         _hurtRequester = new StateRequester(StateType.Hurt);
         _hurtPoint?.Init(Hurt);
+        _blockController = GetComponent<BlockController>();
     }
 
     private void Hurt(float damages)
     {
+        if (_blockController != null && _blockController.IsBlocking)
+        {
+            _blockController.SpawnBlockFlashVFX();
+            return;
+        }
+
         _cachedLastDamages = damages;
         _hurtRequester?.RequestState(_requestReceiver);
     }

@@ -9,6 +9,7 @@ public class PlayerInput : CharacterInput
     {
         _movementInput = new PlayerMovementInput(GetComponent<PhotonView>());
         _attackInput = new PlayerAttackInput(GetComponent<PhotonView>());
+        _blockInput = new PlayerBlockInput(GetComponent<PhotonView>());
     }
     #endregion
 }
