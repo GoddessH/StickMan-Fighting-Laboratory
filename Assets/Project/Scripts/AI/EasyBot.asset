@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99ab3451541b0a0419d3f6afe56d61fe, type: 3}
   m_Name: EasyBot
   m_EditorClassIdentifier: 
-  detectRange: 6
+  detectRange: 8
   attackRange: 3.2
-  threatRange: 1.8
+  threatRange: 2.5
   reactionDelay: 0.8
   attackCooldown: 2
   blockDuration: 0.5

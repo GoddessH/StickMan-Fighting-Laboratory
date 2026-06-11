@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99ab3451541b0a0419d3f6afe56d61fe, type: 3}
   m_Name: HardBot
   m_EditorClassIdentifier: 
-  detectRange: 10
-  attackRange: 1.6
+  detectRange: 12
+  attackRange: 4.5
   threatRange: 2.5
   reactionDelay: 0.15
   attackCooldown: 0.8

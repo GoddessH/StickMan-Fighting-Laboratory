@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99ab3451541b0a0419d3f6afe56d61fe, type: 3}
   m_Name: MediumBot
   m_EditorClassIdentifier: 
-  detectRange: 8
-  attackRange: 1.6
-  threatRange: 2
+  detectRange: 10
+  attackRange: 3.2
+  threatRange: 3.5
   reactionDelay: 0.4
   attackCooldown: 1.5
   blockDuration: 1
