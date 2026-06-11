@@ -20,8 +20,8 @@ public class RoomInitializer
         }
     }
 
-    public void ConnectToFighter(Character fighter)
+    public void SetupUI(Stack<Character> fighterStack)
     {
-        _uiInMatchManager?.ConnectToFighter(fighter);
+        _uiInMatchManager?.ConnectToFighter(fighterStack);
     }
 }

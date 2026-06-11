@@ -7,8 +7,8 @@ public class UIInMatchManager : MonoBehaviour
     [SerializeField] private UIInMatchTop _topUI;
 
 
-    public void ConnectToFighter(Character fighter)
+    public void ConnectToFighter(Stack<Character> fighterStack)
     {
-        _topUI?.ConnectFighterToValidPanel(fighter);
+        _topUI?.SetupFighter(fighterStack);
     }
 }

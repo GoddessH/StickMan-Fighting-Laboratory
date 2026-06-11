@@ -9,7 +9,7 @@ public class RoomRegister : MonoBehaviourPun
     public void RegistRoom(Character owner)
     {
         _owner = owner;
-        photonView.RPC(nameof(RPCRegistRoom), RpcTarget.All);
+        RPCRegistRoom();
     }
 
     [PunRPC]

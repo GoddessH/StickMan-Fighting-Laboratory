@@ -1,3 +1,4 @@
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
@@ -11,8 +12,7 @@ public class UIFighterPanel : MonoBehaviour
     {
         _characterHealthBar?.ConnectToOwner(healthManager);
 
-        if (_characterName != null) 
-            _characterName.text = name;
+        if (_characterName != null) _characterName.text = name;
     }
 
     public void DisconnectToFighter()

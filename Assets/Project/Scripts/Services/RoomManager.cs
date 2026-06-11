@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +21,11 @@ public class RoomManager : Singleton<RoomManager>
         if (_fighterStack.Count >= 2) return;
 
         _fighterStack.Push(character);
-        _roomInitializer.InitFighterFacing(new Stack<Character>(_fighterStack));
-        _roomInitializer.ConnectToFighter(character);
+
+        if (_fighterStack.Count == 2)
+        {
+            _roomInitializer.InitFighterFacing(new Stack<Character>(_fighterStack));
+            _roomInitializer.SetupUI(_fighterStack);
+        }
     }
 }

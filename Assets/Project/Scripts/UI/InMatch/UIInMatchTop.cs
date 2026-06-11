@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,34 +9,33 @@ public class UIInMatchTop : MonoBehaviour
 
     [SerializeField] UIFighterPanel[] _fighterPanels = new UIFighterPanel[_MAX_FIGHTER_PANEL];
 
-    private Dictionary<Character, UIFighterPanel> _connectedFighterDictionary = new Dictionary<Character, UIFighterPanel>();
-
-
     /// <returns>Return true if the next logic should not be executed</returns>
-    private bool GuardCheck(Character fighter)
+    private bool GuardCheck()
     {
-        return (_connectedFighterDictionary.Count > 0 && _connectedFighterDictionary.ContainsKey(fighter)) || _fighterPanels.Length > _MAX_FIGHTER_PANEL;
+        return _fighterPanels.Length > _MAX_FIGHTER_PANEL;
     }
 
-    public void ConnectFighterToValidPanel(Character fighter)
+    public void SetupFighter(Stack<Character> fighterStack)
     {
-        if (GuardCheck(fighter)) return;
-
-        foreach (var panel in _fighterPanels)
+        if (GuardCheck()) return;
+        
+        foreach(var fighter in fighterStack)
         {
-            if (panel == null || _connectedFighterDictionary.ContainsValue(panel)) continue;
+            int panelIndex = 0;
+            if (fighter.photonView.OwnerActorNr != PhotonNetwork.CurrentRoom.MasterClientId)
+            {
+                fighter.gameObject.name += "2";
+                panelIndex = 1;
+            }
+            else fighter.gameObject.name += "1";
 
-            panel.ConnectToFighter(fighter.gameObject.name, fighter.GetComponent<HealthManager>());
-            _connectedFighterDictionary[fighter] = panel;
-            break;
+            _fighterPanels[panelIndex].ConnectToFighter(fighter.gameObject.name, fighter.GetComponent<HealthManager>());
+            //Debug.Log($"{fighter.photonView.ViewID}: {_fighterPanels[panelIndex].gameObject.name}");
         }
     }
 
-    public void DisconnectFighter(Character fighter)
+    public void DisconnectAllFighter()
     {
-        if (GuardCheck(fighter)) return;
-
-        _connectedFighterDictionary[fighter].DisconnectToFighter();
-        _connectedFighterDictionary.Remove(fighter);
+        foreach (var panel in _fighterPanels) panel.DisconnectToFighter();
     }
 }
