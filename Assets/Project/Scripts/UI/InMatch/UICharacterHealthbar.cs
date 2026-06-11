@@ -50,4 +50,9 @@ public class UICharacterHealthbar : MonoBehaviour
         healthFillSequence.Append(_healthTrail.DOFillAmount(fillAmount, _changeHealthDuration).SetEase(Ease.OutQuart));
         healthFillSequence.Play();
     }
+
+    public void SetHealthManager()
+    {
+
+    }
 }
