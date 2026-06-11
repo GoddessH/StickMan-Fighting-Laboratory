@@ -9,6 +9,8 @@ public class CharacterSpawner : Singleton<CharacterSpawner>
     private void Start()
     {
         SpawnCharacter();
+
+        GetComponent<BotSpawner>()?.SpawnCharacter();
     }
 
     private void SpawnCharacter()

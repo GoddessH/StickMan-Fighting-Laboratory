@@ -21,7 +21,6 @@ public class BotBrain : MonoBehaviour
 
     // ---- Ref ----
     private BotInput _botInput;
-    private RotationHandler _rotationHandler;
 
     // ---- Timers ----
     private float _attackTimer;
@@ -37,7 +36,6 @@ public class BotBrain : MonoBehaviour
     private void Awake()
     {
         _botInput = GetComponent<BotInput>();
-        _rotationHandler = GetComponent<RotationHandler>();
     }
 
     private void Update()
@@ -46,16 +44,11 @@ public class BotBrain : MonoBehaviour
         if (_target == null)
         {
             GameObject player = GameObject.FindWithTag("Player");
+
             if (player != null)
             {
                 _target = player.transform;
             }
-        }
-
-        // Đồng bộ target cho RotationHandler để Bot luôn xoay hướng về phía Player
-        if (_target != null && _rotationHandler != null)
-        {
-            _rotationHandler.SetTarget(_target);
         }
 
         // Đảm bảo BotInput dọn dẹp trạng thái input frame trước

@@ -25,7 +25,7 @@ public class UIInMatchTop : MonoBehaviour
 
             if (fighter.GetComponent<RoomRegister>() != null)
             {
-                if (fighter.photonView.OwnerActorNr != PhotonNetwork.CurrentRoom.MasterClientId)
+                if (fighter.photonView.OwnerActorNr != PhotonNetwork.CurrentRoom.MasterClientId || fighter is BotController)
                 {
                     fighter.gameObject.name += "2";
                     panelIndex = 1;

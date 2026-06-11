@@ -6,6 +6,7 @@ public class NextSceneLoader : MonoBehaviour
 {
     // 
     [SerializeField] private SceneType _nextScene;
+    [SerializeField] private JoinRoomHandler _joinRoomHandler;
 
     #region Call in Button's event
     public void LoadNextScene()
@@ -14,8 +15,8 @@ public class NextSceneLoader : MonoBehaviour
         int sceneCount = SceneManager.sceneCountInBuildSettings;
         if (nextSceneIndex < 0 || nextSceneIndex >= sceneCount) return;
 
-        if (_nextScene == SceneType.Trainning) SceneManager.LoadSceneAsync(nextSceneIndex);
-        else PhotonNetwork.LoadLevel(nextSceneIndex);
+        if (_joinRoomHandler == null) SceneManager.LoadSceneAsync(nextSceneIndex);
+        else _joinRoomHandler.ConnectToMasterServer(() => PhotonNetwork.LoadLevel(nextSceneIndex));
     }
     #endregion
 }
