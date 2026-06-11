@@ -29,6 +29,7 @@ public class BotBrain : MonoBehaviour
     private float _retreatTimer;
     private float _reactionTimer;
     private float _attackSequenceTimer;
+    private float _nextComboHitTimer;
 
     // ---- Pending transition (chờ reaction delay) ----
     private AIState? _pendingState;
@@ -109,11 +110,10 @@ public class BotBrain : MonoBehaviour
     // -------- FSM --------
     private void TickAI(float dist, float distY, Vector2 dirToTarget, bool threatDetected)
     {
-        // Threat override: Nếu phát hiện nguy hiểm và không đang Block/Retreat
-        // → dùng Weighted Random chọn Block hay Retreat
+        // Threat override: Nếu phát hiện nguy hiểm và không đang Block
+        // → dùng Weighted Random chọn Block hay Retreat (cho phép phản xạ khi đang Retreat)
         if (threatDetected &&
             _currentAIState != AIState.Block &&
-            _currentAIState != AIState.Retreat &&
             !_pendingState.HasValue)
         {
             AIState reaction = PickThreatReaction();
@@ -185,8 +185,13 @@ public class BotBrain : MonoBehaviour
 
         _botInput.BotMovement.SetDirection(new Vector2(xMove, yMove));
 
+        // Cần đảm bảo mục tiêu nằm trong tầm đánh cả chiều ngang và chiều dọc (thẳng hàng) trước khi đánh
+        float diffX = Mathf.Abs(_target.position.x - transform.position.x);
+        float diffY = Mathf.Abs(distY);
+        bool inAttackRange = diffX <= _config.attackRange && diffY <= _config.flyThreshold;
+
         // Vào attackRange + cooldown xong → chọn action
-        if (dist <= _config.attackRange && _attackTimer <= 0)
+        if (inAttackRange && _attackTimer <= 0)
         {
             AIState action = PickAttackAction();
             ScheduleTransition(action);
@@ -201,20 +206,29 @@ public class BotBrain : MonoBehaviour
     {
         _botInput.BotMovement.SetDirection(Vector2.zero);
 
-        // Duy trì _isPressed = true để AttackState có thể tiến combo
-        // trong khoảng thời gian = số đòn muốn đánh × độ dài 1 animation
+        // Duy trì kích hoạt combo bằng các đòn chém rời rạc đúng thời điểm thay vì spam liên tục giữ nút
         if (_attackSequenceTimer > 0)
         {
             _attackSequenceTimer -= Time.deltaTime;
-            _botInput.BotAttack.TriggerAttack(); // giữ input (Clear() sẽ reset mỗi frame, gọi lại để duy trì)
+            _nextComboHitTimer -= Time.deltaTime;
+            if (_nextComboHitTimer <= 0 && _attackSequenceTimer > 0)
+            {
+                _botInput.BotAttack.TriggerAttack();
+                _nextComboHitTimer = _config.singleAttackDuration;
+            }
         }
-        // Khi _attackSequenceTimer = 0: _isPressed = false → AttackState tự kết thúc sau đòn cuối
+        else
+        {
+            // Chỉ lập lịch di chuyển tiếp cận khi chuỗi combo đã thực sự kết thúc
+            ScheduleTransition(AIState.Approach);
+        }
     }
 
     private void HandleBlock()
     {
         _botInput.BotMovement.SetDirection(Vector2.zero);
-        if (_blockTimer <= 0)
+        bool threatStillDetected = DetectPlayerHitBox();
+        if (_blockTimer <= 0 || !threatStillDetected)
         {
             _botInput.BotBlock.StopBlock();
             ScheduleTransition(AIState.Approach);
@@ -281,11 +295,9 @@ public class BotBrain : MonoBehaviour
                 // Chọn số đòn combo ngẫu nhiên từ 1 đến maxComboHits
                 int comboHits = Random.Range(1, _config.maxComboHits + 1);
                 _attackSequenceTimer = comboHits * _config.singleAttackDuration;
+                _nextComboHitTimer = _config.singleAttackDuration;
                 _attackTimer = _config.attackCooldown;
                 _botInput.BotAttack.TriggerAttack(); // kích hoạt đòn đầu tiên
-                // Lập lịch quay về Approach sau reactionDelay
-                // (reactionDelay đóng vai trò "buffer" sau khi sequence kết thúc)
-                ScheduleTransition(AIState.Approach);
                 break;
 
             case AIState.Block:

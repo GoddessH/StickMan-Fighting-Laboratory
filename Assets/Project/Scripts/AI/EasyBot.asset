@@ -19,6 +19,8 @@ MonoBehaviour:
   attackCooldown: 2
   blockDuration: 0.5
   retreatDuration: 0.8
+  singleAttackDuration: 0.333
+  maxComboHits: 1
   attackWeight: 3
   blockWeight: 1
   retreatWeight: 1
