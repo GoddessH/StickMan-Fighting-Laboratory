@@ -1,9 +1,10 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(BotInput))]
 public class BotBrain : MonoBehaviour
 {
-    // ---- Cấu hình trong Inspector ----
+    // ---- Cấu hình trong Inspector (Giữ nguyên để bảo toàn dữ liệu trên Prefabs) ----
     [Header("Target")]
     [SerializeField] private Transform _target;
 
@@ -15,27 +16,69 @@ public class BotBrain : MonoBehaviour
     [SerializeField] private string _playerHitBoxTag = "PlayerHitBox";
 
     // ---- AI State nội bộ ----
-    private enum AIState { Idle, Approach, Attack, Block, Retreat }
+    public enum AIState { Idle, Approach, Attack, Block, Retreat }
     [Header("Debug Info")]
     [SerializeField] private AIState _currentAIState = AIState.Idle;
 
-    // ---- Ref ----
-    private BotInput _botInput;
+    // ---- Refs ----
+    private BotSensor _sensor;
+    private BotExecutor _executor;
+
+    // ---- States Map ----
+    private Dictionary<AIState, BotState> _statesMap;
+    private BotState _currentState;
 
     // ---- Timers ----
     private float _attackTimer;
-    private float _blockTimer;
-    private float _retreatTimer;
     private float _reactionTimer;
-    private float _attackSequenceTimer;
-    private float _nextComboHitTimer;
 
     // ---- Pending transition (chờ reaction delay) ----
     private AIState? _pendingState;
 
+    // ---- Public Properties ----
+    public BotDifficultyConfig Config => _config;
+    public float AttackTimer => _attackTimer;
+    public bool IsTransitionPending => _pendingState.HasValue;
+
     private void Awake()
     {
-        _botInput = GetComponent<BotInput>();
+        // Khởi tạo các component bổ trợ, tự động gắn nếu chưa có
+        _sensor = GetComponent<BotSensor>();
+        if (_sensor == null)
+        {
+            _sensor = gameObject.AddComponent<BotSensor>();
+        }
+        _sensor.Init(_config, _playerHitBoxTag);
+
+        _executor = GetComponent<BotExecutor>();
+        if (_executor == null)
+        {
+            _executor = gameObject.AddComponent<BotExecutor>();
+        }
+        _executor.Init();
+
+        // Khởi tạo các State chuyên biệt
+        _statesMap = new Dictionary<AIState, BotState>
+        {
+            { AIState.Idle, new BotIdleState(this, _sensor, _executor) },
+            { AIState.Approach, new BotApproachState(this, _sensor, _executor) },
+            { AIState.Attack, new BotAttackState(this, _sensor, _executor) },
+            { AIState.Block, new BotBlockState(this, _sensor, _executor) },
+            { AIState.Retreat, new BotRetreatState(this, _sensor, _executor) }
+        };
+    }
+
+    private void Start()
+    {
+        if (_target != null)
+        {
+            _sensor.SetTarget(_target);
+        }
+
+        // Vào trạng thái mặc định ban đầu
+        _currentAIState = AIState.Idle;
+        _currentState = _statesMap[_currentAIState];
+        _currentState.Enter();
     }
 
     private void Update()
@@ -44,24 +87,23 @@ public class BotBrain : MonoBehaviour
         if (_target == null)
         {
             GameObject player = GameObject.FindWithTag("Player");
-
             if (player != null)
             {
                 _target = player.transform;
+                _sensor.SetTarget(_target);
             }
         }
 
-        // Đảm bảo BotInput dọn dẹp trạng thái input frame trước
-        if (_botInput != null && _botInput.BotAttack != null)
-        {
-            _botInput.BotAttack.Clear();
-        }
+        // Đảm bảo dọn dẹp trạng thái input frame trước
+        _executor.ClearAttackInput();
 
         if (_target == null || _config == null) return;
 
+        // Cập nhật cảm biến
+        _sensor.UpdateSensor();
+
+        // Giảm thời gian đếm ngược
         _attackTimer -= Time.deltaTime;
-        _blockTimer -= Time.deltaTime;
-        _retreatTimer -= Time.deltaTime;
         _reactionTimer -= Time.deltaTime;
 
         // Thực hiện pending transition sau khi reaction delay xong
@@ -71,41 +113,9 @@ public class BotBrain : MonoBehaviour
             _pendingState = null;
         }
 
-        Vector2 toTarget = (Vector2)(_target.position - transform.position);
-        float dist = toTarget.magnitude;
-        float distY = _target.position.y - transform.position.y;
-
-        // Phát hiện threat mỗi frame (không phụ thuộc AI State)
-        bool threatDetected = DetectPlayerHitBox();
-
-        TickAI(dist, distY, toTarget.normalized, threatDetected);
-    }
-
-    // -------- Threat Detection --------
-    // Dùng Physics2D.OverlapCircleAll — KHÔNG đọc trực tiếp Player input
-    private bool DetectPlayerHitBox()
-    {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            transform.position,
-            _config.threatRange
-        );
-
-        foreach (var hit in hits)
-        {
-            if (hit != null && hit.CompareTag(_playerHitBoxTag))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // -------- FSM --------
-    private void TickAI(float dist, float distY, Vector2 dirToTarget, bool threatDetected)
-    {
         // Threat override: Nếu phát hiện nguy hiểm và không đang Block
         // → dùng Weighted Random chọn Block hay Retreat (cho phép phản xạ khi đang Retreat)
-        if (threatDetected &&
+        if (_sensor.ThreatDetected &&
             _currentAIState != AIState.Block &&
             !_pendingState.HasValue)
         {
@@ -115,133 +125,14 @@ public class BotBrain : MonoBehaviour
             return;
         }
 
-        switch (_currentAIState)
-        {
-            case AIState.Idle:
-                HandleIdle(dist);
-                break;
-            case AIState.Approach:
-                HandleApproach(dist, distY, dirToTarget);
-                break;
-            case AIState.Attack:
-                HandleAttack();
-                break;
-            case AIState.Block:
-                HandleBlock();
-                break;
-            case AIState.Retreat:
-                HandleRetreat(dirToTarget);
-                break;
-        }
-    }
-
-    // -------- State Handlers --------
-
-    private void HandleIdle(float dist)
-    {
-        _botInput.BotMovement.SetDirection(Vector2.zero);
-        if (dist <= _config.detectRange)
-        {
-            ScheduleTransition(AIState.Approach);
-        }
-    }
-
-    private void HandleApproach(float dist, float distY, Vector2 dirToTarget)
-    {
-        // Nếu đang chờ chuyển trạng thái (trong thời gian delay phản xạ), dừng di chuyển hoàn toàn
-        if (_pendingState.HasValue)
-        {
-            _botInput.BotMovement.SetDirection(Vector2.zero);
-            return;
-        }
-
-        // Tính vector di chuyển: x theo hướng target, y theo độ cao tương đối
-        float xMove = dirToTarget.x;
-        float yMove = 0f;
-
-        // Nếu đã ở trong tầm đánh, dừng di chuyển ngang để tránh đè/dính vào Player
-        if (dist <= _config.attackRange)
-        {
-            xMove = 0f;
-        }
-
-        // Fly lên nếu Player cao hơn Bot quá ngưỡng flyThreshold
-        if (distY > _config.flyThreshold && Mathf.Abs(distY) <= _config.maxVerticalChase)
-        {
-            yMove = 1f;  // y > 0 → FlyHandler bật isFly = true
-        }
-        // Hạ xuống nếu Bot cao hơn Player
-        else if (distY < -_config.flyThreshold)
-        {
-            yMove = -1f; // y < 0 → di chuyển xuống (FallHandler tự xử lý rơi)
-        }
-
-        _botInput.BotMovement.SetDirection(new Vector2(xMove, yMove));
-
-        // Cần đảm bảo mục tiêu nằm trong tầm đánh cả chiều ngang và chiều dọc (thẳng hàng) trước khi đánh
-        float diffX = Mathf.Abs(_target.position.x - transform.position.x);
-        float diffY = Mathf.Abs(distY);
-        bool inAttackRange = diffX <= _config.attackRange && diffY <= _config.flyThreshold;
-
-        // Vào attackRange + cooldown xong → chọn action
-        if (inAttackRange && _attackTimer <= 0)
-        {
-            AIState action = PickAttackAction();
-            ScheduleTransition(action);
-        }
-        else if (dist > _config.detectRange)
-        {
-            ScheduleTransition(AIState.Idle);
-        }
-    }
-
-    private void HandleAttack()
-    {
-        _botInput.BotMovement.SetDirection(Vector2.zero);
-
-        // Duy trì kích hoạt combo bằng các đòn chém rời rạc đúng thời điểm thay vì spam liên tục giữ nút
-        if (_attackSequenceTimer > 0)
-        {
-            _attackSequenceTimer -= Time.deltaTime;
-            _nextComboHitTimer -= Time.deltaTime;
-            if (_nextComboHitTimer <= 0 && _attackSequenceTimer > 0)
-            {
-                _botInput.BotAttack.TriggerAttack();
-                _nextComboHitTimer = _config.singleAttackDuration;
-            }
-        }
-        else
-        {
-            // Chỉ lập lịch di chuyển tiếp cận khi chuỗi combo đã thực sự kết thúc
-            ScheduleTransition(AIState.Approach);
-        }
-    }
-
-    private void HandleBlock()
-    {
-        _botInput.BotMovement.SetDirection(Vector2.zero);
-        bool threatStillDetected = DetectPlayerHitBox();
-        if (_blockTimer <= 0 || !threatStillDetected)
-        {
-            _botInput.BotBlock.StopBlock();
-            ScheduleTransition(AIState.Approach);
-        }
-    }
-
-    private void HandleRetreat(Vector2 dirToTarget)
-    {
-        // Di chuyển ngược chiều Player (lùi ra)
-        _botInput.BotMovement.SetDirection(new Vector2(-dirToTarget.x, 0));
-        if (_retreatTimer <= 0)
-        {
-            ScheduleTransition(AIState.Approach);
-        }
+        // Cập nhật logic của trạng thái hiện tại
+        _currentState.Update();
     }
 
     // -------- Weighted Random --------
 
     // Khi vào attackRange: chọn Attack, hoặc Idle (sai lầm/đứng yên)
-    private AIState PickAttackAction()
+    public AIState PickAttackAction()
     {
         float total = _config.attackWeight + _config.idleWeight;
         float roll = Random.Range(0f, total);
@@ -249,7 +140,7 @@ public class BotBrain : MonoBehaviour
     }
 
     // Khi phát hiện threat: chọn Block, Retreat, hoặc Idle (không phản ứng)
-    private AIState PickThreatReaction()
+    public AIState PickThreatReaction()
     {
         float total = _config.blockWeight + _config.retreatWeight + _config.idleWeight;
         float roll = Random.Range(0f, total);
@@ -262,9 +153,9 @@ public class BotBrain : MonoBehaviour
         return AIState.Idle;
     }
 
-    // -------- Reaction Delay --------
+    // -------- Reaction Delay & Transition --------
 
-    private void ScheduleTransition(AIState nextState)
+    public void ScheduleTransition(AIState nextState)
     {
         if (_pendingState == nextState) return;
         _pendingState = nextState;
@@ -278,47 +169,36 @@ public class BotBrain : MonoBehaviour
 
     private void ExecuteTransition(AIState nextState)
     {
+        _currentState.Exit();
         _currentAIState = nextState;
+        _currentState = _statesMap[nextState];
+        _currentState.Enter();
         Debug.Log($"[BotBrain] → {nextState}");
-
-        switch (nextState)
-        {
-            case AIState.Attack:
-                _botInput.BotMovement.SetDirection(Vector2.zero);
-                // Chọn số đòn combo ngẫu nhiên từ 1 đến maxComboHits
-                int comboHits = Random.Range(1, _config.maxComboHits + 1);
-                _attackSequenceTimer = comboHits * _config.singleAttackDuration;
-                _nextComboHitTimer = _config.singleAttackDuration;
-                _attackTimer = _config.attackCooldown;
-                _botInput.BotAttack.TriggerAttack(); // kích hoạt đòn đầu tiên
-                break;
-
-            case AIState.Block:
-                _blockTimer = _config.blockDuration;
-                _botInput.BotBlock.StartBlock();
-                break;
-            case AIState.Retreat:
-                _retreatTimer = _config.retreatDuration;
-                _botInput.BotBlock.StopBlock();
-                break;
-            case AIState.Approach:
-            case AIState.Idle:
-                // Đảm bảo block được tắt khi rời khỏi Block state
-                _botInput.BotBlock.StopBlock();
-                break;
-        }
     }
 
     // -------- Public API --------
 
+    public void SetAttackCooldown()
+    {
+        _attackTimer = _config.attackCooldown;
+    }
+
     public void SetTarget(Transform target)
     {
         _target = target;
+        if (_sensor != null)
+        {
+            _sensor.SetTarget(target);
+        }
     }
 
     public void SetConfig(BotDifficultyConfig config)
     {
         _config = config;
+        if (_sensor != null)
+        {
+            _sensor.Init(config, _playerHitBoxTag);
+        }
     }
 
 #if UNITY_EDITOR

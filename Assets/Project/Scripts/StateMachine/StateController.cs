@@ -13,6 +13,8 @@ public class StateController: MonoBehaviourPun, IStateRequestReceiver
     private StateMachine _stateMachine = new StateMachine();
     #endregion
 
+    public StateType CurrentStateType => _stateMachine.CurrentStateType;
+
     private void Update()
     {
         _stateMachine.Update();
