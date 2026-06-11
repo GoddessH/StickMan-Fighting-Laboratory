@@ -1,11 +1,12 @@
 using System;
 using UnityEngine;
 
-public class HurtController : MonoBehaviour, IProvider<Func<float>>
+public class HurtController : MonoBehaviour, IProvider<Func<float>>, IDamageTakerEvent
 {
     //
     [SerializeField] private HurtPoint _hurtPoint;
 
+    private Action _onTakeDamage;
     private IStateRequestReceiver _requestReceiver;
     private float _cachedLastDamages;
 
@@ -33,6 +34,7 @@ public class HurtController : MonoBehaviour, IProvider<Func<float>>
 
         _cachedLastDamages = damages;
         _hurtRequester?.RequestState(_requestReceiver);
+        _onTakeDamage?.Invoke();
     }
 
     #region Implement IProvider
@@ -41,5 +43,17 @@ public class HurtController : MonoBehaviour, IProvider<Func<float>>
     /// </summary>
     public Func<float> Provide()
         => () => _cachedLastDamages;
+    #endregion
+
+    #region Explicit implement IDamageTakerEvent
+    void IDamageTakerEvent.SubscribeTakeDamageEvent(Action subscriber)
+    {
+        _onTakeDamage -= subscriber;
+        _onTakeDamage += subscriber;
+    }
+    void IDamageTakerEvent.UnsubscribeTakeDamageEvent(Action unSubscriber)
+    {
+        _onTakeDamage -= unSubscriber;
+    }
     #endregion
 }

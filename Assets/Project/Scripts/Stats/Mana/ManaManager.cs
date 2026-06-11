@@ -9,7 +9,7 @@ public class ManaManager : MonoBehaviour, IManaRegenerator
     [SerializeField] private float _regenManaPerHit;
 
     private PhotonView _photonView;
-    private IDamageDealerEvent _damageDealer;
+    private IDamageTakerEvent _damageTaker;
     private float _currentMana = 50;
 
     public event Action<float, float> OnChangeMana;
@@ -17,18 +17,17 @@ public class ManaManager : MonoBehaviour, IManaRegenerator
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
-        _damageDealer = GetComponent<IDamageDealerEvent>();
+        _damageTaker = GetComponent<IDamageTakerEvent>();
     }
 
     private void OnEnable()
     {
-        _damageDealer?.UnsubscribeEvent(RegenerateMana);
-        _damageDealer?.SubscribeEvent(RegenerateMana);
+        _damageTaker?.SubscribeTakeDamageEvent(RegenerateMana);
     }
 
     private void OnDisable()
     {
-        _damageDealer?.UnsubscribeEvent(RegenerateMana);
+        _damageTaker?.UnsubscribeTakeDamageEvent(RegenerateMana);
     }
 
     [PunRPC]
