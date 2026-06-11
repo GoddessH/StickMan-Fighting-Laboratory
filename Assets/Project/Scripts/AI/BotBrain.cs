@@ -153,9 +153,22 @@ public class BotBrain : MonoBehaviour
 
     private void HandleApproach(float dist, float distY, Vector2 dirToTarget)
     {
+        // Nếu đang chờ chuyển trạng thái (trong thời gian delay phản xạ), dừng di chuyển hoàn toàn
+        if (_pendingState.HasValue)
+        {
+            _botInput.BotMovement.SetDirection(Vector2.zero);
+            return;
+        }
+
         // Tính vector di chuyển: x theo hướng target, y theo độ cao tương đối
         float xMove = dirToTarget.x;
         float yMove = 0f;
+
+        // Nếu đã ở trong tầm đánh, dừng di chuyển ngang để tránh đè/dính vào Player
+        if (dist <= _config.attackRange)
+        {
+            xMove = 0f;
+        }
 
         // Fly lên nếu Player cao hơn Bot quá ngưỡng flyThreshold
         if (distY > _config.flyThreshold && Mathf.Abs(distY) <= _config.maxVerticalChase)
