@@ -39,12 +39,15 @@ public class StateController: MonoBehaviourPun, IStateRequestReceiver
     {
         if (photonView != null && !photonView.IsMine) return;
 
+        //Debug.Log($"Phase1: Current: {_stateMachine.CurrentStateType} ---- Next: {type}");
+
         State currentState = _stateLibrary[_stateMachine.CurrentStateType];
         State nextState = _stateLibrary[type];
 
         if (currentState == null || nextState == null || nextState == currentState || nextState.Priority >= currentState.Priority) return;
 
         _stateMachine.SwitchState(type);
+        //Debug.Log($"Phase2: Current: {_stateMachine.CurrentStateType} ---- Next: {type}");
     }
     #endregion
 }

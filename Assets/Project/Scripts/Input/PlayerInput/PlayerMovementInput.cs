@@ -11,7 +11,7 @@ public class PlayerMovementInput : MovementInput
     public PlayerMovementInput(PhotonView photonView)
     {
         _ownerPhotonView = photonView;
-        _movementAction = InputSystem.actions.FindAction("Move");
+        _movementAction = InputSystem.actions.FindAction(InputActionName.MoveAction);
     }
 
 

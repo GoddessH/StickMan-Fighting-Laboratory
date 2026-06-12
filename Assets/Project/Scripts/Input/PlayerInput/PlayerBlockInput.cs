@@ -12,7 +12,7 @@ public class PlayerBlockInput : EventInput
     public PlayerBlockInput(PhotonView ownerPhotonView)
     {
         _ownerPhotonView = ownerPhotonView;
-        _blockAction = InputSystem.actions.FindAction("Block");
+        _blockAction = InputSystem.actions.FindAction(InputActionName.BlockAction);
     }
 
     private void OnBlock(InputAction.CallbackContext ctx)

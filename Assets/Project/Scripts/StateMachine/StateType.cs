@@ -6,5 +6,6 @@ public enum StateType
     Attack = 2, 
     Hurt = 3, 
     Dead = 4,
-    Block = 5
+    Block = 5,
+    Charge = 6,
 }

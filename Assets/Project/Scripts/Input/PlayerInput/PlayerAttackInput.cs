@@ -1,6 +1,5 @@
 using Photon.Pun;
 using System;
-using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerAttackInput : EventInput
@@ -12,7 +11,7 @@ public class PlayerAttackInput : EventInput
     public PlayerAttackInput(PhotonView ownerPhotonView)
     {
         _ownerPhotonView = ownerPhotonView;
-        _attackAction = InputSystem.actions.FindAction("Attack");
+        _attackAction = InputSystem.actions.FindAction(InputActionName.AttackAction);
     }
 
     private void OnAttack(InputAction.CallbackContext ctx)

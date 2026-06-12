@@ -17,6 +17,7 @@ public class StateMachine
     {
         if (_library == null) return;
         _library[CurrentStateType].UpdateState();
+        //Debug.Log(CurrentStateType);
     }
     
     public void SwitchState(StateType nextType)
