@@ -2,7 +2,7 @@ using Photon.Pun;
 using System;
 using UnityEngine;
 
-public class ManaManager : MonoBehaviour, IManaRegenerator
+public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer
 {
     //
     [SerializeField] private float _maxMana;
@@ -13,6 +13,23 @@ public class ManaManager : MonoBehaviour, IManaRegenerator
     private float _currentMana = 50;
 
     public event Action<float, float> OnChangeMana;
+
+    public float CurrentMana => _currentMana;
+
+    public bool HasEnoughMana(float amount)
+    {
+        return _currentMana >= amount;
+    }
+
+    public void ConsumeMana(float amount)
+    {
+        _currentMana = Mathf.Max(0f, _currentMana - amount);
+        
+        Debug.Log($"[ManaManager] Deducted: -{amount:F0} Mana | Current Mana: {_currentMana:F0}/{_maxMana:F0}");
+
+        if (_photonView == null) RPCOnChangeMana(_currentMana, _maxMana);
+        else _photonView.RPC(nameof(RPCOnChangeMana), RpcTarget.All, _currentMana, _maxMana);
+    }
 
     private void Awake()
     {
@@ -33,6 +50,8 @@ public class ManaManager : MonoBehaviour, IManaRegenerator
     [PunRPC]
     private void RPCOnChangeMana(float currentMana, float maxMana)
     {
+        _currentMana = currentMana;
+        _maxMana = maxMana;
         OnChangeMana?.Invoke(_currentMana, _maxMana);
     }
 
@@ -42,6 +61,9 @@ public class ManaManager : MonoBehaviour, IManaRegenerator
         if (_currentMana >= _maxMana) return;
 
         _currentMana = Mathf.Min(_currentMana + _regenManaPerHit, _maxMana);
+
+        Debug.Log($"[ManaManager] Regenerated: +{_regenManaPerHit:F0} Mana (Hit) | Current Mana: {_currentMana:F0}/{_maxMana:F0}");
+
         if (_photonView == null) RPCOnChangeMana(_currentMana, _maxMana);
         else _photonView.RPC(nameof(RPCOnChangeMana), RpcTarget.All, _currentMana, _maxMana);
     }

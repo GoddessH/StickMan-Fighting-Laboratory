@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 3140206292288713531}
   - component: {fileID: 4294418765833022213}
   - component: {fileID: 2958892009886002591}
+  - component: {fileID: 6022055671278894324}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -421,6 +422,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxMana: 200
   _regenManaPerHit: 10
+--- !u!114 &6022055671278894324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338028093530308318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af2d7b58d4601784d98e58dfd51c7484, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _skills:
+  - {fileID: 11400000, guid: 9d6cfb8383fb8f8469bad9af8199da0c, type: 2}
 --- !u!1 &4071623425003871092
 GameObject:
   m_ObjectHideFlags: 0

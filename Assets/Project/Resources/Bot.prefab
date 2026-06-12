@@ -76,6 +76,7 @@ GameObject:
   - component: {fileID: 8467658984099497892}
   - component: {fileID: -1479159093166560016}
   - component: {fileID: 5369770953912282946}
+  - component: {fileID: 8930655800527239357}
   m_Layer: 0
   m_Name: Bot
   m_TagString: Untagged
@@ -442,6 +443,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxMana: 200
   _regenManaPerHit: 10
+--- !u!114 &8930655800527239357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3344395903890743326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af2d7b58d4601784d98e58dfd51c7484, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _skills:
+  - {fileID: 11400000, guid: 9d6cfb8383fb8f8469bad9af8199da0c, type: 2}
 --- !u!1 &5025883456512114503
 GameObject:
   m_ObjectHideFlags: 0
