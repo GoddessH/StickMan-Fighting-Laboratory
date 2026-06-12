@@ -1,6 +1,6 @@
 using System;
 
-public class BotAttackInput : AttackInput
+public class BotAttackInput : EventInput
 {
     private bool _isPressed;
 
@@ -23,12 +23,12 @@ public class BotAttackInput : AttackInput
     }
 
     #region Implement AttackInput
-    public override void SusbscribeAttackAction(Action subscriber)
+    public override void SubscribeInputAction(Action subscriber)
     {
         _cachedSubscriber = subscriber;
     }
 
-    public override void UnsubscribeAttackAction()
+    public override void UnsubscribeInputAction()
     {
         _cachedSubscriber = null;
     }

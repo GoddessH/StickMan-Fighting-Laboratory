@@ -10,7 +10,7 @@ public class BlockController : MonoBehaviour, IProvider<Func<bool>>
     [SerializeField] private Transform _blockFlashSpawnPoint;
 
     private IStateRequestReceiver _requestReceiver;
-    private BlockInput _blockInput;
+    private EventInput _blockInput;
 
     #region Supporter
     private StateRequester _blockRequester;
@@ -27,10 +27,10 @@ public class BlockController : MonoBehaviour, IProvider<Func<bool>>
     }
 
     private void OnEnable()
-        => _blockInput?.SubscribeBlockAction(RequestBlock);
+        => _blockInput?.SubscribeInputAction(RequestBlock);
 
     private void OnDisable()
-        => _blockInput?.UnsubscribeBlockAction();
+        => _blockInput?.UnsubscribeInputAction();
 
     private void RequestBlock()
         => _blockRequester?.RequestState(_requestReceiver);
