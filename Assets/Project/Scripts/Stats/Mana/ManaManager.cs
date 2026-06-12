@@ -2,7 +2,7 @@ using Photon.Pun;
 using System;
 using UnityEngine;
 
-public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer
+public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IManaState
 {
     //
     [SerializeField] private float _maxMana;
@@ -14,7 +14,10 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer
 
     public event Action<float, float> OnChangeMana;
 
-    public float CurrentMana => _currentMana;
+    public float GetCurrentMana()
+    {
+        return _currentMana;
+    }
 
     public bool HasEnoughMana(float amount)
     {

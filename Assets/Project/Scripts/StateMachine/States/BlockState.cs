@@ -10,7 +10,6 @@ public class BlockState : State
 
     private BlockController _blockController;
     private SkillController _skillController;
-    private IManaConsumer _manaConsumer;
 
     private float _blockTimer;
 
@@ -20,7 +19,6 @@ public class BlockState : State
         _onCheckBlockHolding = _blockController?.Provide();
         _onCheckAttackInput = _ownerGO.GetComponent<AttackController>()?.Provide();
         _skillController = _ownerGO.GetComponent<SkillController>();
-        _manaConsumer = _ownerGO.GetComponent<IManaConsumer>();
     }
 
     public override void EnterState()

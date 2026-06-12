@@ -8,15 +8,17 @@ public class SkillController : MonoBehaviour
     [SerializeField] private List<BaseSkill> _skills = new List<BaseSkill>();
 
     private IManaConsumer _manaConsumer;
+    private IManaState _manaState;
     private Dictionary<SkillType, float> _cooldownTimers = new Dictionary<SkillType, float>();
 
     private List<SkillType> _activeContinuousSkills = new List<SkillType>();
     private Dictionary<SkillType, float> _continuousAccumulators = new Dictionary<SkillType, float>();
     private float _statusLogTimer;
 
-    public void Init(IManaConsumer manaConsumer)
+    public void Init(IManaConsumer manaConsumer, IManaState manaState)
     {
         _manaConsumer = manaConsumer;
+        _manaState = manaState;
         for (int i = 0; i < _skills.Count; i++)
         {
             if (_skills[i] != null)
@@ -27,9 +29,10 @@ public class SkillController : MonoBehaviour
     private void Start()
     {
         IManaConsumer mana = GetComponent<IManaConsumer>();
-        if (mana != null)
+        IManaState manaState = GetComponent<IManaState>();
+        if (mana != null || manaState != null)
         {
-            Init(mana);
+            Init(mana, manaState);
         }
     }
 
@@ -62,7 +65,7 @@ public class SkillController : MonoBehaviour
             if (_statusLogTimer >= 1.0f)
             {
                 string activeSkillsStr = string.Join(", ", _activeContinuousSkills);
-                Debug.Log($"[SkillController] Active Skills: [{activeSkillsStr}] | Current Mana: {_manaConsumer?.CurrentMana:F0}");
+                Debug.Log($"[SkillController] Active Skills: [{activeSkillsStr}] | Current Mana: {_manaState?.GetCurrentMana():F0}");
                 _statusLogTimer = 0f;
             }
         }
@@ -93,7 +96,7 @@ public class SkillController : MonoBehaviour
             return false;
 
         // 2. Kiểm tra Mana
-        if (_manaConsumer == null || !_manaConsumer.HasEnoughMana(config.manaCost)) 
+        if (_manaState == null || !_manaState.HasEnoughMana(config.manaCost)) 
             return false;
 
         return true;
@@ -140,9 +143,9 @@ public class SkillController : MonoBehaviour
         // Khi tích lũy đủ 1 giây hoạt động liên tục
         if (_continuousAccumulators[type] >= 1.0f)
         {
-            if (_manaConsumer.HasEnoughMana(config.manaCost))
+            if (_manaState != null && _manaState.HasEnoughMana(config.manaCost))
             {
-                _manaConsumer.ConsumeMana(config.manaCost);
+                _manaConsumer?.ConsumeMana(config.manaCost);
                 _continuousAccumulators[type] -= 1.0f;
             }
             else
