@@ -29,7 +29,7 @@ public class BlockState : State
             return;
         }
 
-        if (_skillController != null && !_skillController.CanCast(SkillType.Block))
+        if (_skillController == null || !_skillController.StartSkill(SkillType.Block))
         {
             _onComplete?.Invoke(_type);
             return;
@@ -37,11 +37,6 @@ public class BlockState : State
 
         // Bật animation Block
         _stateData.AnimationHandler.SetBool(AnimationName.Block, true);
-
-        // Bật trạng thái Block trong Controller
-        _blockController?.SetBlocking(true);
-
-        _skillController?.CastSkill(SkillType.Block);
         _blockTimer = 5.0f;
     }
 
@@ -69,10 +64,10 @@ public class BlockState : State
             return;
         }
 
-        // Tiêu hao mana duy trì
+        // Tiêu hao mana duy trì và cập nhật kỹ năng
         if (_skillController != null)
         {
-            if (!_skillController.ConsumeContinuousMana(SkillType.Block, Time.deltaTime))
+            if (!_skillController.IsSkillExecuting(SkillType.Block))
             {
                 _onComplete?.Invoke(_type);
                 return;
@@ -85,7 +80,7 @@ public class BlockState : State
         // Tắt animation Block
         _stateData.AnimationHandler.SetBool(AnimationName.Block, false);
 
-        // Tắt trạng thái Block trong Controller
-        _blockController?.SetBlocking(false);
+        // Dừng skill (sẽ tự động gọi OnEnd và giải phóng BlockController)
+        _skillController?.StopSkill(SkillType.Block);
     }
 }

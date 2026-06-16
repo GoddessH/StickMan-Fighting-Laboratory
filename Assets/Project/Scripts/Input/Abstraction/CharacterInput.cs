@@ -7,6 +7,7 @@ public abstract class CharacterInput: MonoBehaviourPun
     protected MovementInput _movementInput;
     protected AttackInput _attackInput;
     protected BlockInput _blockInput;
+    protected FlashInput _flashInput;
 
     private bool _hasSetup = false;
 
@@ -34,6 +35,15 @@ public abstract class CharacterInput: MonoBehaviourPun
         {
             EnsureSetup();
             return _blockInput;
+        }
+    }
+
+    public FlashInput FlashInput 
+    {
+        get
+        {
+            EnsureSetup();
+            return _flashInput;
         }
     }
 

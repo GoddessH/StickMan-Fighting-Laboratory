@@ -9,20 +9,51 @@ public class SkillController : MonoBehaviour
 
     private IManaConsumer _manaConsumer;
     private IManaState _manaState;
-    private Dictionary<SkillType, float> _cooldownTimers = new Dictionary<SkillType, float>();
 
-    private List<SkillType> _activeContinuousSkills = new List<SkillType>();
+    private Dictionary<SkillType, Skill> _activeSkills = new Dictionary<SkillType, Skill>();
+    private List<SkillType> _configuredSkillTypes = new List<SkillType>();
+
+    private HashSet<SkillType> _activeContinuousSkills = new HashSet<SkillType>();
     private Dictionary<SkillType, float> _continuousAccumulators = new Dictionary<SkillType, float>();
-    private float _statusLogTimer;
 
     public void Init(IManaConsumer manaConsumer, IManaState manaState)
     {
         _manaConsumer = manaConsumer;
         _manaState = manaState;
+        
+        _activeSkills.Clear();
+        _configuredSkillTypes.Clear();
+        _continuousAccumulators.Clear();
+
         for (int i = 0; i < _skills.Count; i++)
         {
-            if (_skills[i] != null)
-                _cooldownTimers[_skills[i].skillType] = 0f;
+            BaseSkill config = _skills[i];
+            if (config == null) continue;
+
+            SkillType type = config.skillType;
+            Skill skillInstance = CreateSkillInstance(config);
+            skillInstance.Init(gameObject, config);
+
+            _activeSkills[type] = skillInstance;
+            _continuousAccumulators[type] = 0f;
+
+            if (!_configuredSkillTypes.Contains(type))
+            {
+                _configuredSkillTypes.Add(type);
+            }
+        }
+    }
+
+    private Skill CreateSkillInstance(BaseSkill config)
+    {
+        switch (config.skillType)
+        {
+            case SkillType.Block:
+                return new BlockSkill();
+            case SkillType.Flash:
+                return new FlashSkill();
+            default:
+                return new BlockSkill();
         }
     }
 
@@ -38,119 +69,133 @@ public class SkillController : MonoBehaviour
 
     private void Update()
     {
-        // Cập nhật Cooldowns
-        List<SkillType> keys = new List<SkillType>(_cooldownTimers.Keys);
-        for (int i = 0; i < keys.Count; i++)
+        // 1. Cập nhật cooldowns và tự động tick active skills không GC Alloc
+        for (int i = 0; i < _configuredSkillTypes.Count; i++)
         {
-            SkillType key = keys[i];
-            if (_cooldownTimers[key] > 0)
-                _cooldownTimers[key] -= Time.deltaTime;
+            SkillType key = _configuredSkillTypes[i];
+            if (_activeSkills.TryGetValue(key, out var skill))
+            {
+                skill.UpdateCooldown(Time.deltaTime);
+
+                if (skill.IsExecuting)
+                {
+                    skill.OnUpdate(Time.deltaTime);
+
+                    if (skill.Config.isContinuous)
+                    {
+                        _activeContinuousSkills.Add(key);
+                        if (!ConsumeContinuousMana(key, Time.deltaTime))
+                        {
+                            StopSkill(key);
+                        }
+                    }
+                }
+            }
         }
 
-        // Reset bộ tích lũy thời gian của các skill duy trì không hoạt động ở frame trước
-        List<SkillType> accumulatorKeys = new List<SkillType>(_continuousAccumulators.Keys);
-        for (int i = 0; i < accumulatorKeys.Count; i++)
+        // 2. Reset bộ tích lũy duy trì không GC Alloc
+        for (int i = 0; i < _configuredSkillTypes.Count; i++)
         {
-            SkillType key = accumulatorKeys[i];
+            SkillType key = _configuredSkillTypes[i];
             if (!_activeContinuousSkills.Contains(key))
             {
                 _continuousAccumulators[key] = 0f;
             }
         }
 
-        // Log các skill duy trì đang hoạt động mỗi giây 1 lần
-        // if (_activeContinuousSkills.Count > 0)
-        // {
-        //     _statusLogTimer += Time.deltaTime;
-        //     if (_statusLogTimer >= 1.0f)
-        //     {
-        //         string activeSkillsStr = string.Join(", ", _activeContinuousSkills);
-        //         Debug.Log($"[SkillController] Active Skills: [{activeSkillsStr}] | Current Mana: {_manaState?.GetCurrentMana():F0}");
-        //         _statusLogTimer = 0f;
-        //     }
-        // }
-        // else
-        // {
-        //     _statusLogTimer = 0f;
-        // }
         _activeContinuousSkills.Clear();
     }
 
     public BaseSkill GetSkillConfig(SkillType type)
     {
-        for (int i = 0; i < _skills.Count; i++)
-        {
-            if (_skills[i] != null && _skills[i].skillType == type)
-                return _skills[i];
-        }
+        if (_activeSkills.TryGetValue(type, out var skill))
+            return skill.Config;
         return null;
+    }
+
+    public bool HasEnoughMana(float amount)
+    {
+        return _manaState != null && _manaState.HasEnoughMana(amount);
+    }
+
+    public void ConsumeMana(float amount)
+    {
+        _manaConsumer?.ConsumeMana(amount);
+    }
+
+    public bool IsOnCooldown(SkillType type)
+    {
+        if (_activeSkills.TryGetValue(type, out var skill))
+        {
+            return skill.CooldownTimer > 0f;
+        }
+        return false;
     }
 
     public bool CanCast(SkillType type)
     {
-        BaseSkill config = GetSkillConfig(type);
-        if (config == null) return false;
-
-        // 1. Kiểm tra Cooldown
-        if (_cooldownTimers.ContainsKey(type) && _cooldownTimers[type] > 0) 
-            return false;
-
-        // 2. Kiểm tra Mana
-        if (_manaState == null || !_manaState.HasEnoughMana(config.manaCost)) 
-            return false;
-
-        return true;
+        if (_activeSkills.TryGetValue(type, out var skill))
+        {
+            return skill.CanCast(this);
+        }
+        return false;
     }
 
-    public void CastSkill(SkillType type)
+    public bool IsSkillExecuting(SkillType type)
     {
-        BaseSkill config = GetSkillConfig(type);
-        if (config == null) return;
-
-        Debug.Log($"[SkillController] Cast Skill: {config.skillName} ({type}) | Mana Cost: {config.manaCost} | IsContinuous: {config.isContinuous}");
-
-        // Trừ mana tick đầu tiên ngay lập tức
-        _manaConsumer?.ConsumeMana(config.manaCost);
-
-        if (!config.isContinuous)
+        if (_activeSkills.TryGetValue(type, out var skill))
         {
-            _cooldownTimers[type] = config.cooldown;
+            return skill.IsExecuting;
         }
-        else
+        return false;
+    }
+
+    public bool StartSkill(SkillType type)
+    {
+        if (_activeSkills.TryGetValue(type, out var skill))
         {
+            if (skill.CanCast(this))
+            {
+                skill.Cast(this);
+                if (skill.Config.isContinuous)
+                {
+                    _continuousAccumulators[type] = 0f;
+                    _activeContinuousSkills.Add(type);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void StopSkill(SkillType type)
+    {
+        if (_activeSkills.TryGetValue(type, out var skill))
+        {
+            skill.OnEnd();
+            _activeContinuousSkills.Remove(type);
             _continuousAccumulators[type] = 0f;
         }
     }
 
-    public bool ConsumeContinuousMana(SkillType type, float deltaTime)
+    private bool ConsumeContinuousMana(SkillType type, float deltaTime)
     {
         BaseSkill config = GetSkillConfig(type);
-        if (config == null || !config.isContinuous || _manaConsumer == null)
+        if (config == null || !config.isContinuous)
             return false;
-
-        if (!_activeContinuousSkills.Contains(type))
-        {
-            _activeContinuousSkills.Add(type);
-        }
-
-        if (!_continuousAccumulators.ContainsKey(type))
-        {
-            _continuousAccumulators[type] = 0f;
-        }
 
         _continuousAccumulators[type] += deltaTime;
 
-        // Khi tích lũy đủ 1 giây hoạt động liên tục
         if (_continuousAccumulators[type] >= 1.0f)
         {
-            if (_manaState != null && _manaState.HasEnoughMana(config.manaCost))
+            if (HasEnoughMana(config.manaCost))
             {
-                _manaConsumer?.ConsumeMana(config.manaCost);
+                ConsumeMana(config.manaCost);
                 _continuousAccumulators[type] -= 1.0f;
             }
             else
             {
-                return false; // Không đủ mana duy trì
+                return false;
             }
         }
         return true;
