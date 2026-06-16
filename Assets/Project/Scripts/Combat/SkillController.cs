@@ -59,20 +59,20 @@ public class SkillController : MonoBehaviour
         }
 
         // Log các skill duy trì đang hoạt động mỗi giây 1 lần
-        if (_activeContinuousSkills.Count > 0)
-        {
-            _statusLogTimer += Time.deltaTime;
-            if (_statusLogTimer >= 1.0f)
-            {
-                string activeSkillsStr = string.Join(", ", _activeContinuousSkills);
-                Debug.Log($"[SkillController] Active Skills: [{activeSkillsStr}] | Current Mana: {_manaState?.GetCurrentMana():F0}");
-                _statusLogTimer = 0f;
-            }
-        }
-        else
-        {
-            _statusLogTimer = 0f;
-        }
+        // if (_activeContinuousSkills.Count > 0)
+        // {
+        //     _statusLogTimer += Time.deltaTime;
+        //     if (_statusLogTimer >= 1.0f)
+        //     {
+        //         string activeSkillsStr = string.Join(", ", _activeContinuousSkills);
+        //         Debug.Log($"[SkillController] Active Skills: [{activeSkillsStr}] | Current Mana: {_manaState?.GetCurrentMana():F0}");
+        //         _statusLogTimer = 0f;
+        //     }
+        // }
+        // else
+        // {
+        //     _statusLogTimer = 0f;
+        // }
         _activeContinuousSkills.Clear();
     }
 
