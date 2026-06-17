@@ -8,7 +8,7 @@ public class BotSensor : MonoBehaviour
     private BotDifficultyConfig _config;
     private StateController _targetStateController;
 
-    private static readonly Collider2D[] s_colliderBuffer = new Collider2D[16];
+    private static readonly Collider2D[] s_colliderBuffer = new Collider2D[1];
 
     public Transform Target => _target;
     public float Distance { get; private set; }
