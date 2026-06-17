@@ -21,7 +21,7 @@ public class ChargeState : State
     public override void EnterState()
     {
         _stateData.AnimationHandler.SetBool(AnimationName.Idle, true);
-        SpawnerManager.Instance.VFXSpawner.SpawnChargeAura(_ownerGO.GetComponent<PhotonView>().ViewID);
+        SpawnerManager.Instance?.VFXSpawner?.SpawnChargeAura(_ownerGO.GetComponent<PhotonView>().ViewID);
         _tick = 0;
     }
 
@@ -45,7 +45,7 @@ public class ChargeState : State
     {
         _stateData.AnimationHandler.SetBool(AnimationName.Idle, false);
         _tick = 0;
-        SpawnerManager.Instance.VFXSpawner.DestroyChargeAura();
+        SpawnerManager.Instance?.VFXSpawner?.DestroyChargeAura();
     }
     #endregion
 }
