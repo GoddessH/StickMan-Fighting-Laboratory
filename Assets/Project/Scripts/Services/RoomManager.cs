@@ -14,6 +14,7 @@ public class RoomManager : Singleton<RoomManager>
     protected override void Awake()
     {
         base.Awake();
+        _roomInitializer.SetupMatch();
     }
 
     public void AddPlayer(Character character)

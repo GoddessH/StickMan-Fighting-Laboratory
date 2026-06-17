@@ -14,9 +14,8 @@ public class AnimationHandlerNetwork : AnimationHandler
         => LocalSetInteger(parameter, value);
 
     #region Override AnimationHandler
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         _photonView = ComponentEnsurer.EnsureComponent(GetComponent<PhotonView>(), gameObject);
     }
 

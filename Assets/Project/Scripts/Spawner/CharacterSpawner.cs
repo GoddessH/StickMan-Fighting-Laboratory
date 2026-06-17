@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class CharacterSpawner : Singleton<CharacterSpawner>
+public class CharacterSpawner : MonoBehaviour
 {
     //
     private const string _characterName = "Player";
