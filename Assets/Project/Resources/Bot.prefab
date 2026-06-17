@@ -404,7 +404,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
   _config: {fileID: 11400000, guid: 32d4f38017ea3c3488ab93d6e4622167, type: 2}
-  _playerHitBoxTag: PlayerHitBox
+  _playerHitBoxMask:
+    serializedVersion: 2
+    m_Bits: 256
   _currentAIState: 0
 --- !u!114 &8467658984099497892
 MonoBehaviour:

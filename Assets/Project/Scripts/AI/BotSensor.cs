@@ -2,10 +2,13 @@ using UnityEngine;
 
 public class BotSensor : MonoBehaviour
 {
-    [SerializeField] private string _playerHitBoxTag = "PlayerHitBox";
+    [SerializeField] private LayerMask _playerHitBoxMask;
 
     private Transform _target;
     private BotDifficultyConfig _config;
+    private StateController _targetStateController;
+
+    private static readonly Collider2D[] s_colliderBuffer = new Collider2D[16];
 
     public Transform Target => _target;
     public float Distance { get; private set; }
@@ -13,15 +16,19 @@ public class BotSensor : MonoBehaviour
     public Vector2 DirectionToTarget { get; private set; }
     public bool ThreatDetected { get; private set; }
 
-    public void Init(BotDifficultyConfig config, string playerHitBoxTag)
+    public void Init(BotDifficultyConfig config, LayerMask playerHitBoxMask)
     {
         _config = config;
-        _playerHitBoxTag = playerHitBoxTag;
+        _playerHitBoxMask = playerHitBoxMask;
     }
 
     public void SetTarget(Transform target)
     {
-        _target = target;
+        if (_target != target)
+        {
+            _target = target;
+            _targetStateController = target != null ? target.GetComponent<StateController>() : null;
+        }
     }
 
     public void UpdateSensor()
@@ -32,7 +39,7 @@ public class BotSensor : MonoBehaviour
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null)
             {
-                _target = player.transform;
+                SetTarget(player.transform);
             }
         }
 
@@ -57,8 +64,12 @@ public class BotSensor : MonoBehaviour
     {
         if (_target != null)
         {
-            StateController targetStateController = _target.GetComponent<StateController>();
-            if (targetStateController != null && targetStateController.CurrentStateType == StateType.Attack)
+            if (_targetStateController == null)
+            {
+                _targetStateController = _target.GetComponent<StateController>();
+            }
+
+            if (_targetStateController != null && _targetStateController.CurrentStateType == StateType.Attack)
             {
                 if (Distance <= _config.threatRange)
                 {
@@ -67,18 +78,26 @@ public class BotSensor : MonoBehaviour
             }
         }
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
+        ContactFilter2D contactFilter = new ContactFilter2D();
+        contactFilter.useLayerMask = true;
+        contactFilter.layerMask = _playerHitBoxMask;
+        contactFilter.useTriggers = true;
+
+        int count = Physics2D.OverlapCircle(
             transform.position,
-            _config.threatRange
+            _config.threatRange,
+            contactFilter,
+            s_colliderBuffer
         );
 
-        foreach (var hit in hits)
+        bool threatDetected = count > 0;
+
+        // BẮT BUỘC giải phóng các phần tử trong buffer tĩnh về null sau khi xử lý xong
+        for (int i = 0; i < s_colliderBuffer.Length; i++)
         {
-            if (hit != null && hit.CompareTag(_playerHitBoxTag))
-            {
-                return true;
-            }
+            s_colliderBuffer[i] = null;
         }
-        return false;
+
+        return threatDetected;
     }
 }

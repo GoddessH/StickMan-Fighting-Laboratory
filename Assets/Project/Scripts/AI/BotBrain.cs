@@ -12,8 +12,8 @@ public class BotBrain : MonoBehaviour
     [SerializeField] private BotDifficultyConfig _config;
 
     [Header("Threat Detection")]
-    [Tooltip("Tag của GameObject chứa AttackHitBox của Player")]
-    [SerializeField] private string _playerHitBoxTag = "PlayerHitBox";
+    [Tooltip("LayerMask chứa AttackHitBox của Player")]
+    [SerializeField] private LayerMask _playerHitBoxMask;
 
     // ---- AI State nội bộ ----
     public enum AIState { Idle, Approach, Attack, Block, Retreat }
@@ -48,7 +48,7 @@ public class BotBrain : MonoBehaviour
         {
             _sensor = gameObject.AddComponent<BotSensor>();
         }
-        _sensor.Init(_config, _playerHitBoxTag);
+        _sensor.Init(_config, _playerHitBoxMask);
 
         _executor = GetComponent<BotExecutor>();
         if (_executor == null)
@@ -197,7 +197,7 @@ public class BotBrain : MonoBehaviour
         _config = config;
         if (_sensor != null)
         {
-            _sensor.Init(config, _playerHitBoxTag);
+            _sensor.Init(config, _playerHitBoxMask);
         }
     }
 
