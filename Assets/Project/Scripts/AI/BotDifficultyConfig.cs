@@ -50,6 +50,16 @@ public class BotDifficultyConfig : ScriptableObject
     [Tooltip("Khoảng cách Y tối đa bot cố bay lên/hạ xuống")]
     public float maxVerticalChase = 5.0f;
 
+    [Header("Pattern Tracking")]
+    [Tooltip("Bật/tắt hệ thống nhận dạng lối chơi của Player")]
+    public bool enablePatternTracking = true;
+    [Tooltip("Độ nhạy thích ứng của Bot (càng cao Bot thích nghi càng mạnh)")]
+    [Range(0.1f, 5f)]
+    public float patternAdaptationStrength = 1.5f;
+    [Tooltip("Thời gian bán rã của cửa sổ EMA (giây) - thời gian để Bot quên lối chơi cũ và thích nghi với lối chơi mới")]
+    [Range(0.5f, 10f)]
+    public float patternTrackingHalfLife = 3.0f;
+
     [Header("Preset Description")]
     [TextArea(2, 4)]
     public string description = "";

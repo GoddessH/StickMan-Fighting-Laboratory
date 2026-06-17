@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7343215d6706984f97958fd9b04f61a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 100
+  _maxHealth: 500
 --- !u!114 &7663217877822516840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,7 +366,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _attackHitBox: {fileID: 2445361417006248168}
   _attackEventReceiver: {fileID: 1458336223002671743}
-  _attackDamages: 10
+  _attackDamages: 2
 --- !u!114 &869861843455396347
 MonoBehaviour:
   m_ObjectHideFlags: 0

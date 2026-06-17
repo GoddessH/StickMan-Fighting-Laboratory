@@ -27,4 +27,7 @@ MonoBehaviour:
   idleWeight: 1.87
   flyThreshold: 0.3
   maxVerticalChase: 5
+  enablePatternTracking: 1
+  patternAdaptationStrength: 2.09
+  patternTrackingHalfLife: 1.67
   description: 

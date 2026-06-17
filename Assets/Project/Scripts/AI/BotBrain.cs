@@ -26,6 +26,7 @@ public class BotBrain : MonoBehaviour
     // ---- Refs ----
     private BotSensor _sensor;
     private BotExecutor _executor;
+    private PlayerPatternTracker _patternTracker;
 
     // ---- States Map ----
     private Dictionary<AIState, BotState> _statesMap;
@@ -42,6 +43,7 @@ public class BotBrain : MonoBehaviour
     public BotDifficultyConfig Config => _config;
     public float AttackTimer => _attackTimer;
     public bool IsTransitionPending => _pendingState.HasValue;
+    public PlayerPatternTracker PatternTracker => _patternTracker;
 
     private void Awake()
     {
@@ -60,6 +62,13 @@ public class BotBrain : MonoBehaviour
         }
         _executor.Init();
 
+        _patternTracker = GetComponent<PlayerPatternTracker>();
+        if (_patternTracker == null)
+        {
+            _patternTracker = gameObject.AddComponent<PlayerPatternTracker>();
+        }
+        _patternTracker.Init(_config, _target);
+
         // Khởi tạo các State chuyên biệt
         _statesMap = new Dictionary<AIState, BotState>
         {
@@ -76,6 +85,10 @@ public class BotBrain : MonoBehaviour
         if (_target != null)
         {
             _sensor.SetTarget(_target);
+            if (_patternTracker != null)
+            {
+                _patternTracker.SetTarget(_target);
+            }
         }
 
         // Vào trạng thái mặc định ban đầu
@@ -94,6 +107,10 @@ public class BotBrain : MonoBehaviour
             {
                 _target = player.transform;
                 _sensor.SetTarget(_target);
+                if (_patternTracker != null)
+                {
+                    _patternTracker.SetTarget(_target);
+                }
             }
         }
 
@@ -136,21 +153,53 @@ public class BotBrain : MonoBehaviour
     // Khi vào attackRange: chọn Attack, hoặc Idle (sai lầm/đứng yên)
     public AIState PickAttackAction()
     {
-        float total = _config.attackWeight + _config.idleWeight;
+        float attackWeight = _config.attackWeight;
+        float idleWeight = _config.idleWeight;
+
+        if (_config.enablePatternTracking && _patternTracker != null)
+        {
+            // Nếu người chơi thủ nhiều (DefensivenessScore cao), bot tăng tấn công để tạo áp lực
+            float defScale = _patternTracker.DefensivenessScore * _config.patternAdaptationStrength;
+            attackWeight += _config.attackWeight * defScale;
+
+            if (defScale > 0.3f)
+            {
+                Debug.Log($"[BotBrain] Thích ứng: Người chơi thủ nhiều (Defensiveness: {_patternTracker.DefensivenessScore:F2}), tăng attackWeight -> {attackWeight:F1}");
+            }
+        }
+
+        float total = attackWeight + idleWeight;
         float roll = Random.Range(0f, total);
-        return roll < _config.attackWeight ? AIState.Attack : AIState.Idle;
+        return roll < attackWeight ? AIState.Attack : AIState.Idle;
     }
 
     // Khi phát hiện threat: chọn Block, Retreat, hoặc Idle (không phản ứng)
     public AIState PickThreatReaction()
     {
-        float total = _config.blockWeight + _config.retreatWeight + _config.idleWeight;
+        float blockWeight = _config.blockWeight;
+        float retreatWeight = _config.retreatWeight;
+        float idleWeight = _config.idleWeight;
+
+        if (_config.enablePatternTracking && _patternTracker != null)
+        {
+            // Nếu người chơi tấn công nhiều (AggressionScore cao), bot tăng block/retreat để phản xạ
+            float aggressionScale = _patternTracker.AggressionScore * _config.patternAdaptationStrength;
+            blockWeight += _config.blockWeight * aggressionScale;
+            retreatWeight += _config.retreatWeight * aggressionScale;
+
+            // Bot ít đứng im hơn khi người chơi quá hung hãn
+            idleWeight = Mathf.Max(0f, idleWeight - idleWeight * aggressionScale * 0.5f);
+
+            Debug.Log($"[BotBrain] Thích ứng: Người chơi tấn công nhiều (Aggression: {_patternTracker.AggressionScore:F2}), tăng blockWeight -> {blockWeight:F1}, retreatWeight -> {retreatWeight:F1}");
+        }
+
+        float total = blockWeight + retreatWeight + idleWeight;
         float roll = Random.Range(0f, total);
 
-        if (roll < _config.blockWeight) return AIState.Block;
-        roll -= _config.blockWeight;
+        if (roll < blockWeight) return AIState.Block;
+        roll -= blockWeight;
 
-        if (roll < _config.retreatWeight) return AIState.Retreat;
+        if (roll < retreatWeight) return AIState.Retreat;
 
         return AIState.Idle;
     }
@@ -216,6 +265,10 @@ public class BotBrain : MonoBehaviour
         {
             _sensor.SetTarget(target);
         }
+        if (_patternTracker != null)
+        {
+            _patternTracker.SetTarget(target);
+        }
     }
 
     public void SetConfig(BotDifficultyConfig config)
@@ -224,6 +277,10 @@ public class BotBrain : MonoBehaviour
         if (_sensor != null)
         {
             _sensor.Init(config, _playerHitBoxMask);
+        }
+        if (_patternTracker != null)
+        {
+            _patternTracker.Init(config, _target);
         }
     }
 

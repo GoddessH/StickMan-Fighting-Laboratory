@@ -23,13 +23,27 @@ public class BotApproachState : BotState
             xMove = 0f;
         }
 
-        // Fly lên nếu Player cao hơn Bot quá ngưỡng flyThreshold
-        if (sensor.DistanceY > config.flyThreshold && Mathf.Abs(sensor.DistanceY) <= config.maxVerticalChase)
+        // Tự động điều chỉnh độ nhạy bay dựa trên AirborneScore của đối thủ
+        float airborneScore = 0f;
+        if (config.enablePatternTracking && brain.PatternTracker != null)
+        {
+            airborneScore = brain.PatternTracker.AirborneScore;
+        }
+
+        float dynamicFlyThreshold = config.flyThreshold;
+        if (airborneScore > 0.3f)
+        {
+            // Độ nhạy tăng (ngưỡng giảm) khi đối thủ bay nhảy nhiều
+            dynamicFlyThreshold = config.flyThreshold * (1f - airborneScore * 0.5f);
+        }
+
+        // Fly lên nếu Player cao hơn Bot quá ngưỡng dynamicFlyThreshold
+        if (sensor.DistanceY > dynamicFlyThreshold && Mathf.Abs(sensor.DistanceY) <= config.maxVerticalChase)
         {
             yMove = 1f;
         }
         // Hạ xuống nếu Bot cao hơn Player
-        else if (sensor.DistanceY < -config.flyThreshold)
+        else if (sensor.DistanceY < -dynamicFlyThreshold)
         {
             yMove = -1f;
         }
@@ -39,7 +53,7 @@ public class BotApproachState : BotState
         // Cần đảm bảo mục tiêu nằm trong tầm đánh cả chiều ngang và chiều dọc (thẳng hàng) trước khi đánh
         float diffX = Mathf.Abs(sensor.Target.position.x - brain.transform.position.x);
         float diffY = Mathf.Abs(sensor.DistanceY);
-        bool inAttackRange = diffX <= config.attackRange && diffY <= config.flyThreshold;
+        bool inAttackRange = diffX <= config.attackRange && diffY <= dynamicFlyThreshold;
 
         // Vào attackRange + cooldown xong → chọn action
         if (inAttackRange && brain.AttackTimer <= 0)
