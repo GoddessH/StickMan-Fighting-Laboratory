@@ -123,7 +123,6 @@ public class BotBrain : MonoBehaviour
             !_pendingState.HasValue)
         {
             AIState reaction = PickThreatReaction();
-            Debug.Log($"[BotBrain] Threat detected! → {reaction}");
             ScheduleTransition(reaction);
             return;
         }
@@ -200,7 +199,6 @@ public class BotBrain : MonoBehaviour
         _currentAIState = nextState;
         _currentState = _statesMap[nextState];
         _currentState.Enter();
-        Debug.Log($"[BotBrain] → {nextState}");
         OnStateChanged?.Invoke(prevState, nextState);
     }
 
