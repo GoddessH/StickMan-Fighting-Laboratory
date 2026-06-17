@@ -9,6 +9,7 @@ public class SkillController : MonoBehaviour
 
     private IManaConsumer _manaConsumer;
     private IManaChecker _manaChecker;
+    private CharacterInput _characterInput;
 
     private Dictionary<SkillType, Skill> _activeSkills = new Dictionary<SkillType, Skill>();
     private List<SkillType> _configuredSkillTypes = new List<SkillType>();
@@ -53,17 +54,81 @@ public class SkillController : MonoBehaviour
             case SkillType.Flash:
                 return new FlashSkill();
             default:
-                return new BlockSkill();
+                return new MockSkill();
         }
     }
 
     private void Start()
     {
+        _characterInput = GetComponent<CharacterInput>();
         IManaConsumer mana = GetComponent<IManaConsumer>();
         IManaChecker manaChecker = GetComponent<IManaChecker>();
         if (mana != null || manaChecker != null)
         {
             Init(mana, manaChecker);
+        }
+    }
+
+    private void OnEnable()
+    {
+        SubscribeInputs();
+    }
+
+    private void OnDisable()
+    {
+        UnsubscribeInputs();
+    }
+
+    private void SubscribeInputs()
+    {
+        if (_characterInput == null) _characterInput = GetComponent<CharacterInput>();
+        if (_characterInput != null)
+        {
+            _characterInput.Skill1Input?.SubscribeInputAction(() => RequestSkill(SkillType.Skill1));
+            _characterInput.Skill2Input?.SubscribeInputAction(() => RequestSkill(SkillType.Skill2));
+            _characterInput.Skill3Input?.SubscribeInputAction(() => RequestSkill(SkillType.Skill3));
+            _characterInput.Skill4Input?.SubscribeInputAction(() => RequestSkill(SkillType.Skill4));
+        }
+    }
+
+    private void UnsubscribeInputs()
+    {
+        if (_characterInput != null)
+        {
+            _characterInput.Skill1Input?.UnsubscribeInputAction();
+            _characterInput.Skill2Input?.UnsubscribeInputAction();
+            _characterInput.Skill3Input?.UnsubscribeInputAction();
+            _characterInput.Skill4Input?.UnsubscribeInputAction();
+        }
+    }
+
+    private void RequestSkill(SkillType type)
+    {
+        if (CanCast(type))
+        {
+            StartSkill(type);
+        }
+    }
+
+    private EventInput GetInputForSlot(SkillType type)
+    {
+        if (_characterInput == null) return null;
+        switch (type)
+        {
+            case SkillType.Block:
+                return _characterInput.BlockInput;
+            case SkillType.Flash:
+                return _characterInput.FlashInput;
+            case SkillType.Skill1:
+                return _characterInput.Skill1Input;
+            case SkillType.Skill2:
+                return _characterInput.Skill2Input;
+            case SkillType.Skill3:
+                return _characterInput.Skill3Input;
+            case SkillType.Skill4:
+                return _characterInput.Skill4Input;
+            default:
+                return null;
         }
     }
 
@@ -83,10 +148,24 @@ public class SkillController : MonoBehaviour
 
                     if (skill.Config.isContinuous)
                     {
-                        _activeContinuousSkills.Add(key);
-                        if (!ConsumeContinuousMana(key, Time.deltaTime))
+                        bool isHeld = false;
+                        var input = GetInputForSlot(key);
+                        if (input != null && input.Provide() != null)
+                        {
+                            isHeld = input.Provide().Invoke();
+                        }
+
+                        if (!isHeld)
                         {
                             StopSkill(key);
+                        }
+                        else
+                        {
+                            _activeContinuousSkills.Add(key);
+                            if (!ConsumeContinuousMana(key, Time.deltaTime))
+                            {
+                                StopSkill(key);
+                            }
                         }
                     }
                 }

@@ -19,5 +19,9 @@ public class BaseSkill : ScriptableObject
 public enum SkillType
 {
     Block,
-    Flash
+    Flash,
+    Skill1,
+    Skill2,
+    Skill3,
+    Skill4
 }

@@ -9,7 +9,10 @@ public abstract class CharacterInput: MonoBehaviourPun
     protected EventInput _blockInput;
     protected EventInput _chargeInput;
     protected EventInput _flashInput;
-    //protected FlashInput _flashInput;
+    protected EventInput _skill1Input;
+    protected EventInput _skill2Input;
+    protected EventInput _skill3Input;
+    protected EventInput _skill4Input;
 
     private bool _hasSetup = false;
 
@@ -50,6 +53,42 @@ public abstract class CharacterInput: MonoBehaviourPun
     }
 
     public EventInput ChargeInput => _chargeInput;
+
+    public EventInput Skill1Input 
+    {
+        get
+        {
+            EnsureSetup();
+            return _skill1Input;
+        }
+    }
+
+    public EventInput Skill2Input 
+    {
+        get
+        {
+            EnsureSetup();
+            return _skill2Input;
+        }
+    }
+
+    public EventInput Skill3Input 
+    {
+        get
+        {
+            EnsureSetup();
+            return _skill3Input;
+        }
+    }
+
+    public EventInput Skill4Input 
+    {
+        get
+        {
+            EnsureSetup();
+            return _skill4Input;
+        }
+    }
 
     protected virtual void Awake()
         => EnsureSetup();
