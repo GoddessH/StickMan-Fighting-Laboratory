@@ -25,8 +25,14 @@ public class FlashSkill : Skill
         var dashConfig = Config as DashSkillData;
         float distance = dashConfig != null ? dashConfig.dashDistance : 5f;
 
-        // Xác định hướng nhìn 2D thực tế dựa trên trục quay và localScale
-        Vector2 dashDir = (Vector2)(Owner.transform.right * Mathf.Sign(Owner.transform.localScale.x));
+        // Lấy VisualRoot của nhân vật để xác định hướng nhìn thực tế của hình ảnh trực quan
+        var character = Owner.GetComponent<Character>();
+        Transform visualTransform = (character != null && character.VisualRoot != null) 
+            ? character.VisualRoot.transform 
+            : Owner.transform;
+
+        // Xác định hướng nhìn 2D thực tế dựa trên trục quay và localScale của VisualRoot
+        Vector2 dashDir = (Vector2)(visualTransform.right * Mathf.Sign(visualTransform.localScale.x));
 
         // Vận tốc = Khoảng cách / Thời gian
         _dashVelocity = dashDir * (distance / DASH_DURATION);
