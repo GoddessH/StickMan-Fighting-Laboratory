@@ -4,7 +4,7 @@ public class BotRetreatState : BotState
 {
     private float _retreatTimer;
 
-    public BotRetreatState(BotBrain brain, BotSensor sensor, BotExecutor executor) : base(brain, sensor, executor) {}
+    public BotRetreatState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
 
     public override void Enter()
     {

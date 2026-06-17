@@ -1,11 +1,11 @@
 public abstract class BotState
 {
     protected BotBrain brain;
-    protected BotSensor sensor;
-    protected BotExecutor executor;
+    protected IBotSensor sensor;
+    protected IBotExecutor executor;
     protected BotDifficultyConfig config => brain.Config;
 
-    protected BotState(BotBrain brain, BotSensor sensor, BotExecutor executor)
+    protected BotState(BotBrain brain, IBotSensor sensor, IBotExecutor executor)
     {
         this.brain = brain;
         this.sensor = sensor;

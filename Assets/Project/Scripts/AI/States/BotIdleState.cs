@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BotIdleState : BotState
 {
-    public BotIdleState(BotBrain brain, BotSensor sensor, BotExecutor executor) : base(brain, sensor, executor) {}
+    public BotIdleState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
 
     public override void Enter()
     {

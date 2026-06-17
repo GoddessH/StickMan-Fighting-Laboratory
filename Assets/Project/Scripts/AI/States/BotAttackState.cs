@@ -5,7 +5,7 @@ public class BotAttackState : BotState
     private float _attackSequenceTimer;
     private float _nextComboHitTimer;
 
-    public BotAttackState(BotBrain brain, BotSensor sensor, BotExecutor executor) : base(brain, sensor, executor) {}
+    public BotAttackState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
 
     public override void Enter()
     {
