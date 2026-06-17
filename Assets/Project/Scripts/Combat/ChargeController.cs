@@ -35,7 +35,7 @@ public class ChargeController : MonoBehaviour, IProvider<Func<bool>>
 
     private void Charge()
     {
-        if (_manaChecker != null && _manaChecker.CheckFullMana()) return;
+        if (_manaChecker != null && _manaChecker.IsFullMana()) return;
 
         _chargeRequester?.RequestState(_requestReceiver);
     }

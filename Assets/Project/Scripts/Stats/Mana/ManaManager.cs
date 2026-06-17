@@ -2,7 +2,7 @@ using Photon.Pun;
 using System;
 using UnityEngine;
 
-public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IManaChecker, IManaState
+public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IManaChecker
 {
     //
     [SerializeField] private float _maxMana;
@@ -14,22 +14,10 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
 
     public event Action<float, float> OnChangeMana;
 
-    public float GetCurrentMana()
-    {
-        return _currentMana;
-    }
-
-    public bool HasEnoughMana(float amount)
-    {
-        return _currentMana >= amount;
-    }
-
     public void ConsumeMana(float amount)
     {
         _currentMana = Mathf.Max(0f, _currentMana - amount);
         
-        Debug.Log($"[ManaManager] Deducted: -{amount:F0} Mana | Current Mana: {_currentMana:F0}/{_maxMana:F0}");
-
         if (_photonView == null) RPCOnChangeMana(_currentMana, _maxMana);
         else _photonView.RPC(nameof(RPCOnChangeMana), RpcTarget.All, _currentMana, _maxMana);
     }
@@ -65,15 +53,16 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
 
         _currentMana = Mathf.Min(_currentMana + _regenManaPerHit, _maxMana);
 
-        Debug.Log($"[ManaManager] Regenerated: +{_regenManaPerHit:F0} Mana (Hit) | Current Mana: {_currentMana:F0}/{_maxMana:F0}");
-
         if (_photonView == null) RPCOnChangeMana(_currentMana, _maxMana);
         else _photonView.RPC(nameof(RPCOnChangeMana), RpcTarget.All, _currentMana, _maxMana);
     }
     #endregion
 
     #region Explicit implement IManaChecker
-    bool IManaChecker.CheckFullMana()
-        => _currentMana >= _maxMana;
+    bool IManaChecker.IsFullMana() => _currentMana >= _maxMana;
+
+    bool IManaChecker.HasManaReached(float amount) => _currentMana >= amount;
+
+    float IManaChecker.GetCurrentMana() => _currentMana;
     #endregion
 }

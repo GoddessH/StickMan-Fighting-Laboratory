@@ -27,7 +27,7 @@ public class ChargeState : State
 
     public override void UpdateState()
     {
-        if (_onCheckHolding == null || !_onCheckHolding.Invoke() || _manaChecker != null && _manaChecker.CheckFullMana())
+        if (_onCheckHolding == null || !_onCheckHolding.Invoke() || _manaChecker != null && _manaChecker.IsFullMana())
         {
             _onComplete?.Invoke(_type);
             return;
