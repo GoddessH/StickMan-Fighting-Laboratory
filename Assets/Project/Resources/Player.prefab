@@ -199,8 +199,10 @@ MonoBehaviour:
     _stateEntryList:
     - Priority: 10
       StateSO: {fileID: 11400000, guid: faceacb7f2e69e54d8a3cb065a1605c2, type: 2}
-    - Priority: 5
+    - Priority: 6
       StateSO: {fileID: 11400000, guid: 8f5862a202a5c824b9ae161e0bc697fa, type: 2}
+    - Priority: 5
+      StateSO: {fileID: 11400000, guid: aa603ad5f05200c44b171efc2622c442, type: 2}
     - Priority: 4
       StateSO: {fileID: 11400000, guid: 5fd19a49509542844b74f58609b47f21, type: 2}
     - Priority: 4
