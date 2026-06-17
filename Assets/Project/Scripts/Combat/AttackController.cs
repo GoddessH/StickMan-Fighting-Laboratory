@@ -6,6 +6,7 @@ public class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDea
 {
     //
     [SerializeField] private AttackHitBox _attackHitBox;
+    [SerializeField] private AnimationEventReceiver _attackEventReceiver;
     [SerializeField] private float _attackDamages;
 
     private IStateRequestReceiver _requestReceiver;
@@ -24,9 +25,7 @@ public class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDea
 
         _attackInput = GetComponent<CharacterInput>().AttackInput;
 
-        AnimationEventReceiver attackEventReceiver = ComponentEnsurer.EnsureComponent(GetComponent<AnimationEventReceiver>(), gameObject);
-
-        attackEventReceiver.Init(DoDamages);
+        _attackEventReceiver?.Init(DoDamages);
     }
 
     private void OnEnable()

@@ -79,7 +79,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3214762951132252618}
-  - {fileID: 5030126988977378083}
   - {fileID: 5042310921687211816}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -294,6 +293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _attackHitBox: {fileID: 3699358350858971060}
+  _attackEventReceiver: {fileID: 6797940685710917804}
   _attackDamages: 10
 --- !u!114 &4294418765833022213
 MonoBehaviour:
@@ -387,12 +387,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4071623425003871092}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.4, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3650678633213958153}
+  m_Father: {fileID: 3214762951132252618}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3699358350858971060
 MonoBehaviour:
@@ -445,6 +445,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3965213371711021117}
+  - {fileID: 5030126988977378083}
   m_Father: {fileID: 3650678633213958153}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8620676857022087741
