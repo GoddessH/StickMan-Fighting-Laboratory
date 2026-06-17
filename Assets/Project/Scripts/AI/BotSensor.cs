@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BotSensor : MonoBehaviour
+public class BotSensor : MonoBehaviour, IBotSensor
 {
     [SerializeField] private LayerMask _playerHitBoxMask;
 

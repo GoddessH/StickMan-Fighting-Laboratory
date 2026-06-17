@@ -4,7 +4,7 @@ public class BotBlockState : BotState
 {
     private float _blockTimer;
 
-    public BotBlockState(BotBrain brain, BotSensor sensor, BotExecutor executor) : base(brain, sensor, executor) {}
+    public BotBlockState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
 
     public override void Enter()
     {

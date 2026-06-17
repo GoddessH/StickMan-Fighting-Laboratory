@@ -365,6 +365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _attackHitBox: {fileID: 2445361417006248168}
+  _attackEventReceiver: {fileID: 0}
   _attackDamages: 10
 --- !u!114 &869861843455396347
 MonoBehaviour:
@@ -513,7 +514,7 @@ Transform:
   m_GameObject: {fileID: 5025883456512114503}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.1, y: 0, z: 0}
+  m_LocalPosition: {x: -0.03, y: -0.03, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

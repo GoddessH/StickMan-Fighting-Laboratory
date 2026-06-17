@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(BotInput))]
-public class BotExecutor : MonoBehaviour
+public class BotExecutor : MonoBehaviour, IBotExecutor
 {
     private BotInput _botInput;
 

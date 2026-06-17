@@ -20,6 +20,9 @@ public class BotBrain : MonoBehaviour
     [Header("Debug Info")]
     [SerializeField] private AIState _currentAIState = AIState.Idle;
 
+    // ---- Events ----
+    public event System.Action<AIState, AIState> OnStateChanged;
+
     // ---- Refs ----
     private BotSensor _sensor;
     private BotExecutor _executor;
@@ -158,6 +161,13 @@ public class BotBrain : MonoBehaviour
     public void ScheduleTransition(AIState nextState)
     {
         if (_pendingState == nextState) return;
+
+        // Ngăn chặn trạng thái độ ưu tiên thấp hơn đè lên trạng thái độ ưu tiên cao hơn đang chờ xử lý
+        if (_pendingState.HasValue && GetStatePriority(nextState) < GetStatePriority(_pendingState.Value))
+        {
+            return;
+        }
+
         _pendingState = nextState;
 
         // Phản xạ tự vệ (Block/Retreat) nhanh hơn ~4x so với di chuyển chủ động
@@ -167,13 +177,31 @@ public class BotBrain : MonoBehaviour
             _reactionTimer = _config.reactionDelay;
     }
 
+    private int GetStatePriority(AIState state)
+    {
+        switch (state)
+        {
+            case AIState.Block:
+            case AIState.Retreat:
+                return 2; // High priority (threat reactions)
+            case AIState.Attack:
+                return 1; // Medium priority (attacking)
+            case AIState.Idle:
+            case AIState.Approach:
+            default:
+                return 0; // Low priority (standard movement/idle)
+        }
+    }
+
     private void ExecuteTransition(AIState nextState)
     {
+        AIState prevState = _currentAIState;
         _currentState.Exit();
         _currentAIState = nextState;
         _currentState = _statesMap[nextState];
         _currentState.Enter();
         Debug.Log($"[BotBrain] → {nextState}");
+        OnStateChanged?.Invoke(prevState, nextState);
     }
 
     // -------- Public API --------

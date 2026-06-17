@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BotApproachState : BotState
 {
-    public BotApproachState(BotBrain brain, BotSensor sensor, BotExecutor executor) : base(brain, sensor, executor) {}
+    public BotApproachState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
 
     public override void Update()
     {
