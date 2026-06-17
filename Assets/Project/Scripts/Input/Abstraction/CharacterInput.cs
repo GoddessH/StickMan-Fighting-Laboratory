@@ -1,12 +1,13 @@
 using Photon.Pun;
+using UnityEngine;
 
 public abstract class CharacterInput: MonoBehaviourPun
 {
     //
     protected MovementInput _movementInput;
-    protected EventInput _attackInput;
-    protected EventInput _blockInput;
-    protected EventInput _chargeInput;
+    protected AttackInput _attackInput;
+    protected BlockInput _blockInput;
+    protected FlashInput _flashInput;
 
     private bool _hasSetup = false;
 
@@ -19,7 +20,7 @@ public abstract class CharacterInput: MonoBehaviourPun
         }
     }
 
-    public EventInput AttackInput 
+    public AttackInput AttackInput 
     {
         get
         {
@@ -28,7 +29,7 @@ public abstract class CharacterInput: MonoBehaviourPun
         }
     }
 
-    public EventInput BlockInput 
+    public BlockInput BlockInput 
     {
         get
         {
@@ -37,8 +38,14 @@ public abstract class CharacterInput: MonoBehaviourPun
         }
     }
 
-    public EventInput ChargeInput => _chargeInput;
-
+    public FlashInput FlashInput 
+    {
+        get
+        {
+            EnsureSetup();
+            return _flashInput;
+        }
+    }
 
     protected virtual void Awake()
         => EnsureSetup();

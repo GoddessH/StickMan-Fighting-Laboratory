@@ -33,7 +33,14 @@ public class BlockController : MonoBehaviour, IProvider<Func<bool>>
         => _blockInput?.UnsubscribeInputAction();
 
     private void RequestBlock()
-        => _blockRequester?.RequestState(_requestReceiver);
+    {
+        var skillController = GetComponent<SkillController>();
+        if (skillController != null && !skillController.CanCast(SkillType.Block))
+        {
+            return;
+        }
+        _blockRequester?.RequestState(_requestReceiver);
+    }
 
     public void SetBlocking(bool value)
     {

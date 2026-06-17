@@ -6,6 +6,8 @@ public abstract class RotationHandler : MonoBehaviour
     protected Transform _target;
     protected float _angle;
 
+    public Transform Target => _target;
+
     /// <summary>
     /// Calculate angle between owner and target
     /// </summary>

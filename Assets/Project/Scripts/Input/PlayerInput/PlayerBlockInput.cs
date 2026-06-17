@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerBlockInput : EventInput
+public class PlayerBlockInput : BlockInput
 {
     //
     private PhotonView _ownerPhotonView;
@@ -12,13 +12,12 @@ public class PlayerBlockInput : EventInput
     public PlayerBlockInput(PhotonView ownerPhotonView)
     {
         _ownerPhotonView = ownerPhotonView;
-        _blockAction = InputSystem.actions.FindAction(InputActionName.BlockAction);
+        _blockAction = InputSystem.actions.FindAction("Block");
     }
 
     private void OnBlock(InputAction.CallbackContext ctx)
     {
         if (_ownerPhotonView != null && !_ownerPhotonView.IsMine) return;
-        //Debug.Log("Block Input Detected");
         _cachedSubscriber?.Invoke();
     }
 
@@ -31,7 +30,7 @@ public class PlayerBlockInput : EventInput
     }
 
     #region Implement BlockInput
-    public override void SubscribeInputAction(Action subscriber)
+    public override void SubscribeBlockAction(Action subscriber)
     {
         if (_blockAction == null) return;
         _cachedSubscriber = subscriber;
@@ -39,7 +38,7 @@ public class PlayerBlockInput : EventInput
         _blockAction.started += OnBlock;
     }
 
-    public override void UnsubscribeInputAction()
+    public override void UnsubscribeBlockAction()
     {
         if (_blockAction == null) return;
         _blockAction.started -= OnBlock;

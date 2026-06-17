@@ -45,6 +45,13 @@ public class MovementController : MonoBehaviour, IProvider<(Func<bool>, Action)>
 
     private bool Move()
     {
+        // Nếu đang lướt (Flash), không cho phép di chuyển bằng input đè lên
+        var skillController = GetComponent<SkillController>();
+        if (skillController != null && skillController.IsSkillExecuting(SkillType.Flash))
+        {
+            return false;
+        }
+
         if (_rawInput == Vector2.zero)
         {
             _rigidBody.linearVelocity = Vector2.zero;

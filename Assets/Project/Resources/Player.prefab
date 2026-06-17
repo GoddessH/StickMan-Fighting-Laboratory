@@ -25,9 +25,9 @@ Transform:
   m_GameObject: {fileID: 833161671397931831}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.15, y: 0.05, z: 0}
+  m_LocalPosition: {x: -0.03, y: -0.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3650678633213958153}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -59,7 +59,8 @@ GameObject:
   - component: {fileID: 3140206292288713531}
   - component: {fileID: 4294418765833022213}
   - component: {fileID: 2958892009886002591}
-  - component: {fileID: 7132765844128175881}
+  - component: {fileID: 6022055671278894324}
+  - component: {fileID: 2936493113668399511}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -276,10 +277,8 @@ MonoBehaviour:
     _stateEntryList:
     - Priority: 10
       StateSO: {fileID: 11400000, guid: faceacb7f2e69e54d8a3cb065a1605c2, type: 2}
-    - Priority: 6
-      StateSO: {fileID: 11400000, guid: 8f5862a202a5c824b9ae161e0bc697fa, type: 2}
     - Priority: 5
-      StateSO: {fileID: 11400000, guid: aa603ad5f05200c44b171efc2622c442, type: 2}
+      StateSO: {fileID: 11400000, guid: 8f5862a202a5c824b9ae161e0bc697fa, type: 2}
     - Priority: 4
       StateSO: {fileID: 11400000, guid: 5fd19a49509542844b74f58609b47f21, type: 2}
     - Priority: 4
@@ -422,10 +421,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9001f2ad1ef99014183e5a0fc65ef423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _chargeAura: {fileID: 0}
   _maxMana: 200
   _regenManaPerHit: 10
---- !u!114 &7132765844128175881
+--- !u!114 &6022055671278894324
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -434,7 +432,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1338028093530308318}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 484a257e20a93814bae20073727ec9d4, type: 3}
+  m_Script: {fileID: 11500000, guid: af2d7b58d4601784d98e58dfd51c7484, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _skills:
+  - {fileID: 11400000, guid: 9d6cfb8383fb8f8469bad9af8199da0c, type: 2}
+  - {fileID: 11400000, guid: 22a76b68b99bfde498ecf0094d74070b, type: 2}
+--- !u!114 &2936493113668399511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338028093530308318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14fe7a79bed498d4cbbde89e571e24cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4071623425003871092
