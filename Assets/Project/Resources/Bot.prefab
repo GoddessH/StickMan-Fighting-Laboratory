@@ -351,7 +351,7 @@ MonoBehaviour:
     _groundMask:
       serializedVersion: 2
       m_Bits: 64
-    _distanceThreshold: 1.8
+    _fallThreshold: 1.8
 --- !u!114 &7961859492729371983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _attackHitBox: {fileID: 2445361417006248168}
-  _attackEventReceiver: {fileID: 0}
+  _attackEventReceiver: {fileID: 1458336223002671743}
   _attackDamages: 10
 --- !u!114 &869861843455396347
 MonoBehaviour:
@@ -409,7 +409,7 @@ MonoBehaviour:
   _config: {fileID: 11400000, guid: 32d4f38017ea3c3488ab93d6e4622167, type: 2}
   _playerHitBoxMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
   _currentAIState: 0
 --- !u!114 &8467658984099497892
 MonoBehaviour:
