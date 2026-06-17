@@ -350,6 +350,10 @@ MonoBehaviour:
   _skills:
   - {fileID: 11400000, guid: 9d6cfb8383fb8f8469bad9af8199da0c, type: 2}
   - {fileID: 11400000, guid: 22a76b68b99bfde498ecf0094d74070b, type: 2}
+  - {fileID: 11400000, guid: a253a20e3e6f06048b06bdf298fd66e9, type: 2}
+  - {fileID: 11400000, guid: 45715e1e3ef857545babfc7076dc7dd1, type: 2}
+  - {fileID: 11400000, guid: 9b18b0477ef04044687aa1e3d2493478, type: 2}
+  - {fileID: 11400000, guid: 435592c221e9cd84995ecaa1e4543f99, type: 2}
 --- !u!114 &2936493113668399511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,10 +553,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc3954075e448640ba13546b1fa70d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _groundMask:
-    serializedVersion: 2
-    m_Bits: 64
-  _rayShootRate: 0.5
 --- !u!114 &6797940685710917804
 MonoBehaviour:
   m_ObjectHideFlags: 0

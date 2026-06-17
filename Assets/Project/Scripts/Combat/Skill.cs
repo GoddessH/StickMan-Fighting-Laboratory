@@ -28,6 +28,7 @@ public abstract class Skill
 
     public virtual void Cast(SkillController controller)
     {
+        Debug.Log($"[SkillSystem] {Owner.name} casted skill: {Config.skillName} (Slot: {Config.skillType}, Cooldown: {Config.cooldown}s, ManaCost: {Config.manaCost})");
         controller.ConsumeMana(Config.manaCost);
         CooldownTimer = Config.cooldown;
         IsExecuting = true;
@@ -83,6 +84,7 @@ public abstract class Skill
     
     public virtual void OnEnd() 
     {
+        Debug.Log($"[SkillSystem] Skill {Config.skillName} on {Owner.name} ended.");
         IsExecuting = false;
         TriggerAnimation(false);
     }
