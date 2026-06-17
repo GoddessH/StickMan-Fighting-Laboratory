@@ -5,9 +5,11 @@ public abstract class CharacterInput: MonoBehaviourPun
 {
     //
     protected MovementInput _movementInput;
-    protected AttackInput _attackInput;
-    protected BlockInput _blockInput;
-    protected FlashInput _flashInput;
+    protected EventInput _attackInput;
+    protected EventInput _blockInput;
+    protected EventInput _chargeInput;
+    protected EventInput _flashInput;
+    //protected FlashInput _flashInput;
 
     private bool _hasSetup = false;
 
@@ -20,7 +22,7 @@ public abstract class CharacterInput: MonoBehaviourPun
         }
     }
 
-    public AttackInput AttackInput 
+    public EventInput AttackInput 
     {
         get
         {
@@ -29,7 +31,7 @@ public abstract class CharacterInput: MonoBehaviourPun
         }
     }
 
-    public BlockInput BlockInput 
+    public EventInput BlockInput 
     {
         get
         {
@@ -38,7 +40,7 @@ public abstract class CharacterInput: MonoBehaviourPun
         }
     }
 
-    public FlashInput FlashInput 
+    public EventInput FlashInput 
     {
         get
         {
@@ -46,6 +48,8 @@ public abstract class CharacterInput: MonoBehaviourPun
             return _flashInput;
         }
     }
+
+    public EventInput ChargeInput => _chargeInput;
 
     protected virtual void Awake()
         => EnsureSetup();

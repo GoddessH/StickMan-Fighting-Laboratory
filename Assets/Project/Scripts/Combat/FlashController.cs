@@ -5,7 +5,7 @@ using UnityEngine;
 public class FlashController : MonoBehaviour, IProvider<Func<bool>>
 {
     private SkillController _skillController;
-    private FlashInput _flashInput;
+    private EventInput _flashInput;
 
     private void Awake()
     {
@@ -17,7 +17,7 @@ public class FlashController : MonoBehaviour, IProvider<Func<bool>>
     {
         if (_flashInput != null)
         {
-            _flashInput.SubscribeFlashAction(RequestFlash);
+            _flashInput.SubscribeInputAction(RequestFlash);
         }
     }
 
@@ -25,7 +25,7 @@ public class FlashController : MonoBehaviour, IProvider<Func<bool>>
     {
         if (_flashInput != null)
         {
-            _flashInput.UnsubscribeFlashAction();
+            _flashInput.UnsubscribeInputAction();
         }
     }
 

@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerFlashInput : FlashInput
+public class PlayerFlashInput : EventInput
 {
     private PhotonView _ownerPhotonView;
     private InputAction _flashAction;
@@ -28,7 +28,7 @@ public class PlayerFlashInput : FlashInput
     }
 
     #region Implement FlashInput
-    public override void SubscribeFlashAction(Action subscriber)
+    public override void SubscribeInputAction(Action subscriber)
     {
         if (_flashAction == null) return;
         _cachedSubscriber = subscriber;
@@ -36,7 +36,7 @@ public class PlayerFlashInput : FlashInput
         _flashAction.started += OnFlash;
     }
 
-    public override void UnsubscribeFlashAction()
+    public override void UnsubscribeInputAction()
     {
         if (_flashAction == null) return;
         _flashAction.started -= OnFlash;

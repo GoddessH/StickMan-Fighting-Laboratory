@@ -1,6 +1,6 @@
 using System;
 
-public class BotFlashInput : FlashInput
+public class BotFlashInput : EventInput
 {
     private bool _isHolding;
 
@@ -17,12 +17,12 @@ public class BotFlashInput : FlashInput
     }
 
     #region Implement FlashInput
-    public override void SubscribeFlashAction(Action subscriber)
+    public override void SubscribeInputAction(Action subscriber)
     {
         _cachedSubscriber = subscriber;
     }
 
-    public override void UnsubscribeFlashAction()
+    public override void UnsubscribeInputAction()
     {
         _cachedSubscriber = null;
     }

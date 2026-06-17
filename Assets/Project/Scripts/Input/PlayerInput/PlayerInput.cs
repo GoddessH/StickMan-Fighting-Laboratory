@@ -11,6 +11,7 @@ public class PlayerInput : CharacterInput
         _attackInput = new PlayerAttackInput(GetComponent<PhotonView>());
         _blockInput = new PlayerBlockInput(GetComponent<PhotonView>());
         _flashInput = new PlayerFlashInput(GetComponent<PhotonView>());
+        _chargeInput = new PlayerChargeInput(GetComponent<PhotonView>());
     }
     #endregion
 }

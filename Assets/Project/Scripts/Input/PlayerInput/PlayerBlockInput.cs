@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerBlockInput : BlockInput
+public class PlayerBlockInput : EventInput
 {
     //
     private PhotonView _ownerPhotonView;
@@ -30,7 +30,7 @@ public class PlayerBlockInput : BlockInput
     }
 
     #region Implement BlockInput
-    public override void SubscribeBlockAction(Action subscriber)
+    public override void SubscribeInputAction(Action subscriber)
     {
         if (_blockAction == null) return;
         _cachedSubscriber = subscriber;
@@ -38,7 +38,7 @@ public class PlayerBlockInput : BlockInput
         _blockAction.started += OnBlock;
     }
 
-    public override void UnsubscribeBlockAction()
+    public override void UnsubscribeInputAction()
     {
         if (_blockAction == null) return;
         _blockAction.started -= OnBlock;
