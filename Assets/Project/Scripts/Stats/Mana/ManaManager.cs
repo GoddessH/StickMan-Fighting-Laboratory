@@ -2,7 +2,7 @@ using Photon.Pun;
 using System;
 using UnityEngine;
 
-public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IManaState
+public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IManaChecker, IManaState
 {
     //
     [SerializeField] private float _maxMana;
@@ -42,12 +42,12 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
 
     private void OnEnable()
     {
-        _damageTaker?.SubscribeTakeDamageEvent(RegenerateMana);
+        _damageTaker?.SubscribeTakeDamageEvent(((IManaRegenerator)this).RegenerateMana);
     }
 
     private void OnDisable()
     {
-        _damageTaker?.UnsubscribeTakeDamageEvent(RegenerateMana);
+        _damageTaker?.UnsubscribeTakeDamageEvent(((IManaRegenerator)this).RegenerateMana);
     }
 
     [PunRPC]
@@ -59,7 +59,7 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
     }
 
     #region Implicit implement IManaRegenerator
-    public void RegenerateMana()
+    void IManaRegenerator.RegenerateMana()
     {
         if (_currentMana >= _maxMana) return;
 
@@ -70,5 +70,10 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
         if (_photonView == null) RPCOnChangeMana(_currentMana, _maxMana);
         else _photonView.RPC(nameof(RPCOnChangeMana), RpcTarget.All, _currentMana, _maxMana);
     }
+    #endregion
+
+    #region Explicit implement IManaChecker
+    bool IManaChecker.CheckFullMana()
+        => _currentMana >= _maxMana;
     #endregion
 }

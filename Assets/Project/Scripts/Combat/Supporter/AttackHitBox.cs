@@ -11,6 +11,7 @@ public class AttackHitBox : MonoBehaviour
     {
         Collider2D targetCollider = Physics2D.OverlapCircle(transform.position, _attackRadius, _damageableMask);
 
+        Debug.Log($"Collider: {targetCollider == null} ---- {targetCollider?.GetComponent<HurtPoint>()}");
         return targetCollider?.GetComponent<HurtPoint>();
     }
 

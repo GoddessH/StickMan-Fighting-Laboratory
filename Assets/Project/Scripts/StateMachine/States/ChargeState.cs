@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ public class ChargeState : State
     public override void EnterState()
     {
         _stateData.AnimationHandler.SetBool(AnimationName.Idle, true);
-        VFXSpawner.Instance.SpawnChargeAura(_ownerGO.transform);
+        SpawnerManager.Instance.VFXSpawner.SpawnChargeAura(_ownerGO.GetComponent<PhotonView>().ViewID);
         _tick = 0;
     }
 
@@ -44,7 +45,7 @@ public class ChargeState : State
     {
         _stateData.AnimationHandler.SetBool(AnimationName.Idle, false);
         _tick = 0;
-        VFXSpawner.Instance.SpawnChargeAura(isDestroy: true);
+        SpawnerManager.Instance.VFXSpawner.DestroyChargeAura();
     }
     #endregion
 }

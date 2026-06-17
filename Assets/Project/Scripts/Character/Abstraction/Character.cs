@@ -2,15 +2,14 @@ using Photon.Pun;
 using UnityEngine;
 
 [RequireComponent(typeof(StateController))]
-public class Character : MonoBehaviourPun/*, IPunObservable*/
+public class Character : MonoBehaviourPun
 {
     //
+    [SerializeField] private CharacterVisualRoot _visualRoot;
+
     private StateController _stateController;
 
-    //private Vector2 _networkedPosition;
-
-    //private float _lerpRate = .1f;
-
+    public CharacterVisualRoot VisualRoot => _visualRoot;
 
     private void Awake()
     {
