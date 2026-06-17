@@ -75,4 +75,15 @@ public class MovementController : MonoBehaviour, IProvider<(Func<bool>, Action)>
     public (Func<bool>, Action) Provide()
         => (Move, ResetMovementSpeed);
     #endregion
+
+#if UNITY_EDITOR
+    #region DevLog
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Vector3 target = transform.position + Vector3.down * _fallHandler.FallThreshold;
+        Gizmos.DrawRay(transform.position, target - transform.position);
+    }
+    #endregion
+#endif
 }

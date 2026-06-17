@@ -8,7 +8,7 @@ public class SkillController : MonoBehaviour
     [SerializeField] private List<BaseSkill> _skills = new List<BaseSkill>();
 
     private IManaConsumer _manaConsumer;
-    private IManaState _manaState;
+    private IManaChecker _manaChecker;
 
     private Dictionary<SkillType, Skill> _activeSkills = new Dictionary<SkillType, Skill>();
     private List<SkillType> _configuredSkillTypes = new List<SkillType>();
@@ -16,10 +16,10 @@ public class SkillController : MonoBehaviour
     private HashSet<SkillType> _activeContinuousSkills = new HashSet<SkillType>();
     private Dictionary<SkillType, float> _continuousAccumulators = new Dictionary<SkillType, float>();
 
-    public void Init(IManaConsumer manaConsumer, IManaState manaState)
+    public void Init(IManaConsumer manaConsumer, IManaChecker manaChecker)
     {
         _manaConsumer = manaConsumer;
-        _manaState = manaState;
+        _manaChecker = manaChecker;
         
         _activeSkills.Clear();
         _configuredSkillTypes.Clear();
@@ -60,10 +60,10 @@ public class SkillController : MonoBehaviour
     private void Start()
     {
         IManaConsumer mana = GetComponent<IManaConsumer>();
-        IManaState manaState = GetComponent<IManaState>();
-        if (mana != null || manaState != null)
+        IManaChecker manaChecker = GetComponent<IManaChecker>();
+        if (mana != null || manaChecker != null)
         {
-            Init(mana, manaState);
+            Init(mana, manaChecker);
         }
     }
 
@@ -115,7 +115,7 @@ public class SkillController : MonoBehaviour
 
     public bool HasEnoughMana(float amount)
     {
-        return _manaState != null && _manaState.HasEnoughMana(amount);
+        return _manaChecker != null && _manaChecker.HasManaReached(amount);
     }
 
     public void ConsumeMana(float amount)

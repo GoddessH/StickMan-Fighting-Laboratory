@@ -62,6 +62,7 @@ GameObject:
   - component: {fileID: 179832622984711681}
   - component: {fileID: 5018268108462409435}
   - component: {fileID: 6440881049565213598}
+  - component: {fileID: 4012487239638541027}
   - component: {fileID: 1252329810087871418}
   - component: {fileID: 8258814930340185186}
   - component: {fileID: 1458336223002671743}
@@ -215,6 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80b6b80723899374eb402709b11878d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 2472111139061564948}
 --- !u!114 &6440881049565213598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,6 +227,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37518a0462546d149ac89968a19b7685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visualRoot: {fileID: 4012487239638541027}
+--- !u!114 &4012487239638541027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3344395903890743326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1523c5247e79354da366138c1f61db1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1252329810087871418
@@ -360,6 +375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _attackHitBox: {fileID: 2445361417006248168}
+  _attackEventReceiver: {fileID: 1458336223002671743}
   _attackDamages: 10
 --- !u!114 &869861843455396347
 MonoBehaviour:
