@@ -10,16 +10,20 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
 
     private PhotonView _photonView;
     private IDamageTakerEvent _damageTaker;
+
+    private Action<float, float> _onChangeMana;
+
     private float _currentMana = 50;
 
-    public event Action<float, float> OnChangeMana;
-
-    public void ConsumeMana(float amount)
+    public event Action<float, float> OnChangeMana
     {
-        _currentMana = Mathf.Max(0f, _currentMana - amount);
-        
-        if (_photonView == null) RPCOnChangeMana(_currentMana, _maxMana);
-        else _photonView.RPC(nameof(RPCOnChangeMana), RpcTarget.All, _currentMana, _maxMana);
+        add
+        {
+            _onChangeMana -= value;
+            _onChangeMana += value;
+            _onChangeMana?.Invoke(_currentMana, _maxMana);
+        }
+        remove => _onChangeMana -= value;
     }
 
     private void Awake()
@@ -28,22 +32,22 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
         _damageTaker = GetComponent<IDamageTakerEvent>();
     }
 
-    private void OnEnable()
-    {
-        _damageTaker?.SubscribeTakeDamageEvent(((IManaRegenerator)this).RegenerateMana);
-    }
+    private void OnEnable() => _damageTaker?.SubscribeTakeDamageEvent(((IManaRegenerator)this).RegenerateMana);
 
-    private void OnDisable()
-    {
-        _damageTaker?.UnsubscribeTakeDamageEvent(((IManaRegenerator)this).RegenerateMana);
-    }
+    private void OnDisable() => _damageTaker?.UnsubscribeTakeDamageEvent(((IManaRegenerator)this).RegenerateMana);
 
     [PunRPC]
     private void RPCOnChangeMana(float currentMana, float maxMana)
     {
         _currentMana = currentMana;
         _maxMana = maxMana;
-        OnChangeMana?.Invoke(_currentMana, _maxMana);
+        _onChangeMana?.Invoke(_currentMana, _maxMana);
+    }
+
+    private void ChangeManaCallBack()
+    {
+        if (_photonView == null) RPCOnChangeMana(_currentMana, _maxMana);
+        else _photonView.RPC(nameof(RPCOnChangeMana), RpcTarget.All, _currentMana, _maxMana);
     }
 
     #region Implicit implement IManaRegenerator
@@ -52,9 +56,16 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
         if (_currentMana >= _maxMana) return;
 
         _currentMana = Mathf.Min(_currentMana + _regenManaPerHit, _maxMana);
+        ChangeManaCallBack();
+    }
+    #endregion
 
-        if (_photonView == null) RPCOnChangeMana(_currentMana, _maxMana);
-        else _photonView.RPC(nameof(RPCOnChangeMana), RpcTarget.All, _currentMana, _maxMana);
+    #region Explicit implement IManaConsumer
+    void IManaConsumer.ConsumeMana(float amount)
+    {
+        _currentMana = Mathf.Max(0f, _currentMana - amount);
+
+        ChangeManaCallBack();
     }
     #endregion
 

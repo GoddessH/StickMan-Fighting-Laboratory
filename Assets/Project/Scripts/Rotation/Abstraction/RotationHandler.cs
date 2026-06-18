@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class RotationHandler : MonoBehaviour
+public abstract class RotationHandler : MonoBehaviour, IComponentDeactiveOnDeath
 {
     // 
     protected Transform _target;
@@ -19,6 +19,10 @@ public abstract class RotationHandler : MonoBehaviour
         _angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
     }
 
-    public void SetTarget(Transform target)
-        => _target = target;
+    public void SetTarget(Transform target) => _target = target;
+
+    #region Explicit implement IComponentDeactiveOnDeath
+    void IComponentDeactiveOnDeath.Active() => enabled = true;
+    void IComponentDeactiveOnDeath.Deactive() => enabled = false;
+    #endregion
 }

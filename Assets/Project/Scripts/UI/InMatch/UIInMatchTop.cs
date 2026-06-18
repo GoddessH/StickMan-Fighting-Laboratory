@@ -15,7 +15,7 @@ public class UIInMatchTop : MonoBehaviour
         return _fighterPanels.Length > _MAX_FIGHTER_PANEL;
     }
 
-    public void SetupFighter(Stack<Character> fighterStack)
+    public void ConnectFighterToMatchTopUI(Stack<Character> fighterStack)
     {
         if (GuardCheck()) return;
         
@@ -37,13 +37,13 @@ public class UIInMatchTop : MonoBehaviour
                 if (fighter.gameObject.name.Contains("Dummy")) panelIndex = 1;
             }
 
-            _fighterPanels[panelIndex].ConnectToFighter(fighter.gameObject.name, fighter.GetComponent<HealthManager>(), fighter.GetComponent<ManaManager>());
+            _fighterPanels[panelIndex].ConnectFighterToFightPanel(fighter.gameObject.name, fighter.GetComponent<HealthManager>(), fighter.GetComponent<ManaManager>());
             //Debug.Log($"{fighter.photonView.ViewID}: {_fighterPanels[panelIndex].gameObject.name}");
         }
     }
 
-    public void DisconnectAllFighter()
+    public void DisconnectFighterToMatchTopUI()
     {
-        foreach (var panel in _fighterPanels) panel.DisconnectToFighter();
+        foreach (var panel in _fighterPanels) panel.DisconnectFighterToFightPanel();
     }
 }

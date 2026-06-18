@@ -9,7 +9,7 @@ public class UIFighterPanel : MonoBehaviour
     [SerializeField] private UIFighterManabar _characterManabar;
     [SerializeField] private TextMeshProUGUI _characterName;
 
-    public void ConnectToFighter(string name, HealthManager healthManager, ManaManager manaManager)
+    public void ConnectFighterToFightPanel(string name, HealthManager healthManager, ManaManager manaManager)
     {
         _characterHealthBar?.ConnectToOwner(healthManager);
         _characterManabar?.ConnectToOwner(manaManager);
@@ -17,7 +17,7 @@ public class UIFighterPanel : MonoBehaviour
         if (_characterName != null) _characterName.text = name;
     }
 
-    public void DisconnectToFighter()
+    public void DisconnectFighterToFightPanel()
     {
         _characterHealthBar?.DisconnectToOwner();
         

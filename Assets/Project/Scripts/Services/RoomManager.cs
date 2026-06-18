@@ -25,7 +25,7 @@ public class RoomManager : Singleton<RoomManager>
 
         if (_fighterStack.Count == 2)
         {
-            _roomInitializer.InitFighterFacing(new Stack<Character>(_fighterStack));
+            _roomInitializer.SetupFighterNeededData(new Stack<Character>(_fighterStack));
             _roomInitializer.SetupUI(_fighterStack);
         }
     }
