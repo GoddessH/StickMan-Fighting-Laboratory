@@ -45,6 +45,8 @@ public class RoomInitializer
 
     public void SetupUI(Stack<Character> fighterStack)
     {
-        _uiInMatchManager?.ConnectToFighter(fighterStack);
+        //foreach(var fighter in fighterStack)
+        //    if (fighter != null) fighter.
+        _uiInMatchManager?.ConnectFighterToUI(fighterStack);
     }
 }

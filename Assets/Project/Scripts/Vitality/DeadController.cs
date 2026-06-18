@@ -24,14 +24,18 @@ public class DeadController : MonoBehaviour, IProvider<Action<bool>>
 
     private void SetEnableHurtPoint(bool flag)
     {
-        if (_photonView == null) RPCSetActionHurtPoint(flag);
-        else _photonView.RPC(nameof(RPCSetActionHurtPoint), RpcTarget.All, flag);
+        if (_photonView == null) RPCSetEnableHurtPoint(flag);
+        else _photonView.RPC(nameof(RPCSetEnableHurtPoint), RpcTarget.All, flag);
     }
 
     [PunRPC]
-    private void RPCSetActionHurtPoint(bool flag)
+    private void RPCSetEnableHurtPoint(bool flag)
     {
-        foreach (var component in _disableCompnentList) component.enabled = flag;
+        foreach (var component in _disableCompnentList)
+        {
+            if (component == null) continue;
+            component.enabled = flag;
+        }
     }
 
     public void RequestDeadState()
