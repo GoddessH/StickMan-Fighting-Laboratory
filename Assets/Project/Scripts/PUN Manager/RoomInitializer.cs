@@ -7,6 +7,7 @@ using UnityEngine;
 public class RoomInitializer
 {
     //
+    [SerializeField] private CameraManager _cameraManager;
     [SerializeField] private SpawnerManager _spawnerManagerPrefab;
     [SerializeField] private UIInMatchManager _uiInMatchManager;
 
@@ -23,6 +24,16 @@ public class RoomInitializer
         fighterB?.VisualRoot?.IndicatorRoot?.SetupIndicator(fighterA?.VisualRoot?.IndicatorRoot);
     }
 
+    private void SetupCamera(Stack<Character> fighterStack)
+    {
+        if (_cameraManager == null) return;
+        foreach(var fighter in fighterStack)
+        {
+            if (fighter == null || !fighter.photonView.IsMine) continue;
+            _cameraManager.SetCameraTarget(fighter.transform);
+        }
+    }
+
     public void SetupMatch()
     {
         if (!PhotonNetwork.IsMasterClient) return;
@@ -33,20 +44,19 @@ public class RoomInitializer
     /// <param name="fighterStack">The caller should pass the reference of a copy, not the original</param>
     public void SetupFighterNeededData(Stack<Character> fighterStack)
     {
-        if (fighterStack.Count == 2)
-        {
-            Character secondFighter = fighterStack.Pop();
-            Character firstFighter = fighterStack.Pop();
+        if (fighterStack == null || fighterStack.Count != 2) return;
 
-            SetupFighterFacing(secondFighter, firstFighter);
-            SetupFighterIndicator(secondFighter, firstFighter);
-        }
+        SetupCamera(fighterStack);
+
+        Character secondFighter = fighterStack.Pop();
+        Character firstFighter = fighterStack.Pop();
+
+        SetupFighterFacing(secondFighter, firstFighter);
+        SetupFighterIndicator(secondFighter, firstFighter);
     }
 
     public void SetupUI(Stack<Character> fighterStack)
     {
-        //foreach(var fighter in fighterStack)
-        //    if (fighter != null) fighter.
         _uiInMatchManager?.ConnectFighterToUI(fighterStack);
     }
 }
