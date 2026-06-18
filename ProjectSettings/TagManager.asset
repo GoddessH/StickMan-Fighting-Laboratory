@@ -5,11 +5,12 @@ TagManager:
   serializedVersion: 3
   tags:
   - PlayerHitBox
+  - Bullet
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - CameraBound
   - Water
   - UI
   - Ground
