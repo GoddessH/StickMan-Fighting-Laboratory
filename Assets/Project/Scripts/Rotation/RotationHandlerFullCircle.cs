@@ -8,12 +8,7 @@ public class RotationHandlerFullCircle : RotationHandler
     [SerializeField] private IntervalData _balanceThreshold = new IntervalData(1.8f, 2.5f);
     [SerializeField] private float _rayShootRate = .05f;
 
-    private float _balanceWeight = 1;
-
-    private void Start()
-    {
-        //InvokeRepeating(nameof(CalculateBalanceWeight), 0, _rayShootRate);
-    }
+    private float _balanceWeight = 0;
 
     private void CalculateBalanceWeight()
     {
