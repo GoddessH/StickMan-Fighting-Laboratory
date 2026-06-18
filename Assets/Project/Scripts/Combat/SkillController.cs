@@ -47,15 +47,7 @@ public class SkillController : MonoBehaviour
 
     private Skill CreateSkillInstance(BaseSkill config)
     {
-        switch (config.skillType)
-        {
-            case SkillType.Block:
-                return new BlockSkill();
-            case SkillType.Flash:
-                return new FlashSkill();
-            default:
-                return new MockSkill();
-        }
+        return config.CreateInstance();
     }
 
     private void Start()
@@ -84,10 +76,16 @@ public class SkillController : MonoBehaviour
         if (_characterInput == null) _characterInput = GetComponent<CharacterInput>();
         if (_characterInput != null)
         {
-            _characterInput.Skill1Input?.SubscribeInputAction(() => RequestSkill(SkillType.Skill1));
-            _characterInput.Skill2Input?.SubscribeInputAction(() => RequestSkill(SkillType.Skill2));
-            _characterInput.Skill3Input?.SubscribeInputAction(() => RequestSkill(SkillType.Skill3));
-            _characterInput.Skill4Input?.SubscribeInputAction(() => RequestSkill(SkillType.Skill4));
+            var inputs = _characterInput.SkillInputs;
+            if (inputs != null)
+            {
+                for (int i = 0; i < inputs.Count; i++)
+                {
+                    int index = i;
+                    SkillType type = (SkillType)((int)SkillType.Skill1 + index);
+                    inputs[index]?.SubscribeInputAction(() => RequestSkill(type));
+                }
+            }
         }
     }
 
@@ -95,10 +93,14 @@ public class SkillController : MonoBehaviour
     {
         if (_characterInput != null)
         {
-            _characterInput.Skill1Input?.UnsubscribeInputAction();
-            _characterInput.Skill2Input?.UnsubscribeInputAction();
-            _characterInput.Skill3Input?.UnsubscribeInputAction();
-            _characterInput.Skill4Input?.UnsubscribeInputAction();
+            var inputs = _characterInput.SkillInputs;
+            if (inputs != null)
+            {
+                for (int i = 0; i < inputs.Count; i++)
+                {
+                    inputs[i]?.UnsubscribeInputAction();
+                }
+            }
         }
     }
 
@@ -119,15 +121,16 @@ public class SkillController : MonoBehaviour
                 return _characterInput.BlockInput;
             case SkillType.Flash:
                 return _characterInput.FlashInput;
-            case SkillType.Skill1:
-                return _characterInput.Skill1Input;
-            case SkillType.Skill2:
-                return _characterInput.Skill2Input;
-            case SkillType.Skill3:
-                return _characterInput.Skill3Input;
-            case SkillType.Skill4:
-                return _characterInput.Skill4Input;
             default:
+                if (type >= SkillType.Skill1 && type <= SkillType.Skill4)
+                {
+                    int index = type - SkillType.Skill1;
+                    var inputs = _characterInput.SkillInputs;
+                    if (inputs != null && index >= 0 && index < inputs.Count)
+                    {
+                        return inputs[index];
+                    }
+                }
                 return null;
         }
     }

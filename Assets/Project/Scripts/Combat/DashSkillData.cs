@@ -5,4 +5,9 @@ public class DashSkillData : BaseSkill
 {
     [Header("Dash Configuration")]
     public float dashDistance = 3f; // Khoảng cách lướt mặc định
+
+    public override Skill CreateInstance()
+    {
+        return new FlashSkill();
+    }
 }

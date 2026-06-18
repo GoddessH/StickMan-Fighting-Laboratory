@@ -14,6 +14,11 @@ public class BaseSkill : ScriptableObject
 
     [Header("Animation")]
     public string animationBoolOrTriggerName;
+
+    public virtual Skill CreateInstance()
+    {
+        return new MockSkill();
+    }
 }
 
 public enum SkillType

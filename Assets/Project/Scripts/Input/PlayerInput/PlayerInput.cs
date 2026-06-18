@@ -13,10 +13,12 @@ public class PlayerInput : CharacterInput
         _blockInput = new PlayerBlockInput(pv);
         _flashInput = new PlayerFlashInput(pv);
         _chargeInput = new PlayerChargeInput(pv);
-        _skill1Input = new PlayerSkillInput(pv, InputActionName.Skill1Action);
-        _skill2Input = new PlayerSkillInput(pv, InputActionName.Skill2Action);
-        _skill3Input = new PlayerSkillInput(pv, InputActionName.Skill3Action);
-        _skill4Input = new PlayerSkillInput(pv, InputActionName.Skill4Action);
+        
+        _skillInputs.Clear();
+        _skillInputs.Add(new PlayerSkillInput(pv, InputActionName.Skill1Action));
+        _skillInputs.Add(new PlayerSkillInput(pv, InputActionName.Skill2Action));
+        _skillInputs.Add(new PlayerSkillInput(pv, InputActionName.Skill3Action));
+        _skillInputs.Add(new PlayerSkillInput(pv, InputActionName.Skill4Action));
     }
     #endregion
 }
