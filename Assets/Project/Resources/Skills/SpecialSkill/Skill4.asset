@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54f148c4623827a4f870be8b338f52ae, type: 3}
   m_Name: Skill4
   m_EditorClassIdentifier: 
-  skillType: 2
-  skillName: A
-  manaCost: 0
+  skillType: 5
+  skillName: D
+  manaCost: 100
   isContinuous: 0
   cooldown: 1
   animationBoolOrTriggerName: 

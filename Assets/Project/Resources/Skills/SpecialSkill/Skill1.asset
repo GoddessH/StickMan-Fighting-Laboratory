@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillType: 2
   skillName: A
-  manaCost: 0
+  manaCost: 10
   isContinuous: 0
   cooldown: 1
   animationBoolOrTriggerName: 
