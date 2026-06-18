@@ -9,10 +9,7 @@ public abstract class CharacterInput: MonoBehaviourPun
     protected EventInput _blockInput;
     protected EventInput _chargeInput;
     protected EventInput _flashInput;
-    protected EventInput _skill1Input;
-    protected EventInput _skill2Input;
-    protected EventInput _skill3Input;
-    protected EventInput _skill4Input;
+    protected System.Collections.Generic.List<EventInput> _skillInputs = new System.Collections.Generic.List<EventInput>();
 
     private bool _hasSetup = false;
 
@@ -54,39 +51,12 @@ public abstract class CharacterInput: MonoBehaviourPun
 
     public EventInput ChargeInput => _chargeInput;
 
-    public EventInput Skill1Input 
+    public System.Collections.Generic.IReadOnlyList<EventInput> SkillInputs
     {
         get
         {
             EnsureSetup();
-            return _skill1Input;
-        }
-    }
-
-    public EventInput Skill2Input 
-    {
-        get
-        {
-            EnsureSetup();
-            return _skill2Input;
-        }
-    }
-
-    public EventInput Skill3Input 
-    {
-        get
-        {
-            EnsureSetup();
-            return _skill3Input;
-        }
-    }
-
-    public EventInput Skill4Input 
-    {
-        get
-        {
-            EnsureSetup();
-            return _skill4Input;
+            return _skillInputs;
         }
     }
 
