@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99ab3451541b0a0419d3f6afe56d61fe, type: 3}
   m_Name: HardBot
   m_EditorClassIdentifier: 
-  detectRange: 12
-  attackRange: 4.5
-  threatRange: 2.5
-  reactionDelay: 0.15
-  attackCooldown: 1
-  blockDuration: 1.5
+  detectRange: 8
+  attackRange: 3.54
+  threatRange: 4
+  reactionDelay: 0.114
+  attackCooldown: 0.5
+  blockDuration: 4
   retreatDuration: 0.4
   singleAttackDuration: 0.333
   maxComboHits: 3
-  attackWeight: 5.86
-  blockWeight: 5.86
-  retreatWeight: 5.62
+  attackWeight: 10
+  blockWeight: 8.25
+  retreatWeight: 2.87
   idleWeight: 1.87
   flyThreshold: 0.3
   maxVerticalChase: 5

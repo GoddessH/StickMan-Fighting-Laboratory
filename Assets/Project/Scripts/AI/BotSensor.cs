@@ -10,8 +10,11 @@ public class BotSensor : MonoBehaviour, IBotSensor
 
     private static readonly Collider2D[] s_colliderBuffer = new Collider2D[1];
 
+    private float _lastTargetSearchTime = -10f;
+
     public Transform Target => _target;
     public float Distance { get; private set; }
+    public float DistanceX { get; private set; }
     public float DistanceY { get; private set; }
     public Vector2 DirectionToTarget { get; private set; }
     public bool ThreatDetected { get; private set; }
@@ -33,19 +36,24 @@ public class BotSensor : MonoBehaviour, IBotSensor
 
     public void UpdateSensor()
     {
-        // Tự động tìm Player nếu chưa được gán
+        // Tự động tìm Player nếu chưa được gán (Rate-limited)
         if (_target == null)
         {
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player != null)
+            if (Time.time - _lastTargetSearchTime >= 0.5f)
             {
-                SetTarget(player.transform);
+                _lastTargetSearchTime = Time.time;
+                GameObject player = GameObject.FindWithTag("Player");
+                if (player != null)
+                {
+                    SetTarget(player.transform);
+                }
             }
         }
 
         if (_target == null || _config == null)
         {
             Distance = 0f;
+            DistanceX = 0f;
             DistanceY = 0f;
             DirectionToTarget = Vector2.zero;
             ThreatDetected = false;
@@ -54,6 +62,7 @@ public class BotSensor : MonoBehaviour, IBotSensor
 
         Vector2 toTarget = (Vector2)(_target.position - transform.position);
         Distance = toTarget.magnitude;
+        DistanceX = Mathf.Abs(toTarget.x);
         DistanceY = _target.position.y - transform.position.y;
         DirectionToTarget = toTarget.normalized;
 

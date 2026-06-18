@@ -4,7 +4,9 @@ public class BotRetreatState : BotState
 {
     private float _retreatTimer;
 
-    public BotRetreatState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
+    public override int Priority => 2;
+
+    public BotRetreatState(IBotContext context) : base(context) {}
 
     public override void Enter()
     {
@@ -19,7 +21,7 @@ public class BotRetreatState : BotState
 
         if (_retreatTimer <= 0)
         {
-            brain.ScheduleTransition(BotBrain.AIState.Approach);
+            context.ScheduleTransition(BotBrain.AIState.Approach);
         }
     }
 }

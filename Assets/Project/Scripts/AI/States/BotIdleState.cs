@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BotIdleState : BotState
 {
-    public BotIdleState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
+    public BotIdleState(IBotContext context) : base(context) {}
 
     public override void Enter()
     {
@@ -13,7 +13,7 @@ public class BotIdleState : BotState
     {
         if (sensor.Distance <= config.detectRange)
         {
-            brain.ScheduleTransition(BotBrain.AIState.Approach);
+            context.ScheduleTransition(BotBrain.AIState.Approach);
         }
     }
 }

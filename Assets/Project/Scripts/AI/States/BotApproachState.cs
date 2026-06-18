@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class BotApproachState : BotState
 {
-    public BotApproachState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
+    public BotApproachState(IBotContext context) : base(context) {}
 
     public override void Update()
     {
         // Nếu đang chờ chuyển trạng thái (trong thời gian delay phản xạ), dừng di chuyển hoàn toàn
-        if (brain.IsTransitionPending)
+        if (context.IsTransitionPending)
         {
             executor.SetMovement(Vector2.zero);
             return;
@@ -25,9 +25,9 @@ public class BotApproachState : BotState
 
         // Tự động điều chỉnh độ nhạy bay dựa trên AirborneScore của đối thủ
         float airborneScore = 0f;
-        if (config.enablePatternTracking && brain.PatternTracker != null)
+        if (config.enablePatternTracking && context.PatternTracker != null)
         {
-            airborneScore = brain.PatternTracker.AirborneScore;
+            airborneScore = context.PatternTracker.AirborneScore;
         }
 
         float dynamicFlyThreshold = config.flyThreshold;
@@ -51,19 +51,19 @@ public class BotApproachState : BotState
         executor.SetMovement(new Vector2(xMove, yMove));
 
         // Cần đảm bảo mục tiêu nằm trong tầm đánh cả chiều ngang và chiều dọc (thẳng hàng) trước khi đánh
-        float diffX = Mathf.Abs(sensor.Target.position.x - brain.transform.position.x);
+        float diffX = sensor.DistanceX;
         float diffY = Mathf.Abs(sensor.DistanceY);
         bool inAttackRange = diffX <= config.attackRange && diffY <= dynamicFlyThreshold;
 
         // Vào attackRange + cooldown xong → chọn action
-        if (inAttackRange && brain.AttackTimer <= 0)
+        if (inAttackRange && context.AttackTimer <= 0)
         {
-            BotBrain.AIState action = brain.PickAttackAction();
-            brain.ScheduleTransition(action);
+            BotBrain.AIState action = context.PickAttackAction();
+            context.ScheduleTransition(action);
         }
         else if (sensor.Distance > config.detectRange)
         {
-            brain.ScheduleTransition(BotBrain.AIState.Idle);
+            context.ScheduleTransition(BotBrain.AIState.Idle);
         }
     }
 }

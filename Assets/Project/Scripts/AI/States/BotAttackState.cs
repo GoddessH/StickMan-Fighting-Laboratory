@@ -5,7 +5,16 @@ public class BotAttackState : BotState
     private float _attackSequenceTimer;
     private float _nextComboHitTimer;
 
-    public BotAttackState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
+    public override int Priority => 1;
+
+    public BotAttackState(IBotContext context) : base(context) {}
+
+    public override bool CanInterrupt(BotBrain.AIState incomingState)
+    {
+        if (_attackSequenceTimer <= 0) return true;
+        // Tấn công chỉ có thể bị ngắt bởi trạng thái tự vệ khẩn cấp (Block/Retreat)
+        return incomingState == BotBrain.AIState.Block || incomingState == BotBrain.AIState.Retreat;
+    }
 
     public override void Enter()
     {
@@ -16,7 +25,7 @@ public class BotAttackState : BotState
         _attackSequenceTimer = comboHits * config.singleAttackDuration;
         _nextComboHitTimer = config.singleAttackDuration;
 
-        brain.SetAttackCooldown();
+        context.SetAttackCooldown();
         executor.TriggerAttack(); // kích hoạt đòn đầu tiên
     }
 
@@ -38,7 +47,18 @@ public class BotAttackState : BotState
         else
         {
             // Chỉ lập lịch di chuyển tiếp cận khi chuỗi combo đã thực sự kết thúc
-            brain.ScheduleTransition(BotBrain.AIState.Approach);
+            context.ScheduleTransition(BotBrain.AIState.Approach);
         }
+    }
+
+    public override void Exit()
+    {
+        CancelCombo();
+    }
+
+    private void CancelCombo()
+    {
+        _attackSequenceTimer = 0f;
+        _nextComboHitTimer = 0f;
     }
 }

@@ -4,7 +4,9 @@ public class BotBlockState : BotState
 {
     private float _blockTimer;
 
-    public BotBlockState(BotBrain brain, IBotSensor sensor, IBotExecutor executor) : base(brain, sensor, executor) {}
+    public override int Priority => 2;
+
+    public BotBlockState(IBotContext context) : base(context) {}
 
     public override void Enter()
     {
@@ -21,7 +23,7 @@ public class BotBlockState : BotState
         bool threatStillDetected = sensor.ThreatDetected;
         if (_blockTimer <= 0 || !threatStillDetected)
         {
-            brain.ScheduleTransition(BotBrain.AIState.Approach);
+            context.ScheduleTransition(BotBrain.AIState.Approach);
         }
     }
 

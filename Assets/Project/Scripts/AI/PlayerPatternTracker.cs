@@ -12,6 +12,8 @@ public class PlayerPatternTracker : MonoBehaviour
     public float DefensivenessScore { get; private set; }
     public float AirborneScore { get; private set; }
 
+    private bool _isTrackingEnabled = true;
+
     public void Init(BotDifficultyConfig config, Transform target)
     {
         _config = config;
@@ -21,6 +23,7 @@ public class PlayerPatternTracker : MonoBehaviour
         AggressionScore = 0f;
         DefensivenessScore = 0f;
         AirborneScore = 0f;
+        _isTrackingEnabled = true;
     }
 
     public void SetTarget(Transform target)
@@ -41,9 +44,12 @@ public class PlayerPatternTracker : MonoBehaviour
         }
     }
 
-    private void Update()
+    public void EnableTracking() => _isTrackingEnabled = true;
+    public void DisableTracking() => _isTrackingEnabled = false;
+
+    public void Tick(float deltaTime)
     {
-        if (_target == null || _config == null || !_config.enablePatternTracking)
+        if (_target == null || _config == null || !_config.enablePatternTracking || !_isTrackingEnabled)
         {
             return;
         }
@@ -62,7 +68,7 @@ public class PlayerPatternTracker : MonoBehaviour
         float halfLife = _config.patternTrackingHalfLife;
         if (halfLife <= 0f) halfLife = 3.0f;
         float lambda = Mathf.Log(2f) / halfLife;
-        float alpha = 1f - Mathf.Exp(-Time.deltaTime * lambda);
+        float alpha = 1f - Mathf.Exp(-deltaTime * lambda);
         alpha = Mathf.Clamp01(alpha);
 
         // 1. Theo dõi Tấn công (Aggression)

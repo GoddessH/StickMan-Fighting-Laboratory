@@ -1,18 +1,19 @@
 public abstract class BotState
 {
-    protected BotBrain brain;
-    protected IBotSensor sensor;
-    protected IBotExecutor executor;
-    protected BotDifficultyConfig config => brain.Config;
+    protected IBotContext context;
+    protected IBotSensor sensor => context.Sensor;
+    protected IBotExecutor executor => context.Executor;
+    protected BotDifficultyConfig config => context.Config;
 
-    protected BotState(BotBrain brain, IBotSensor sensor, IBotExecutor executor)
+    public virtual int Priority => 0;
+
+    protected BotState(IBotContext context)
     {
-        this.brain = brain;
-        this.sensor = sensor;
-        this.executor = executor;
+        this.context = context;
     }
 
     public virtual void Enter() {}
     public virtual void Update() {}
     public virtual void Exit() {}
+    public virtual bool CanInterrupt(BotBrain.AIState incomingState) => true;
 }
