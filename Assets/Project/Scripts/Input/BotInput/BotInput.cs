@@ -7,6 +7,7 @@ public class BotInput : CharacterInput
         _attackInput = new BotAttackInput();
         _blockInput = new BotBlockInput();
         _flashInput = new BotFlashInput();
+        _chargeInput = new BotChargeInput();
         
         _skillInputs.Clear();
         _skillInputs.Add(new BotSkillInput());
@@ -21,6 +22,7 @@ public class BotInput : CharacterInput
     public BotAttackInput BotAttack => (BotAttackInput)_attackInput;
     public BotBlockInput BotBlock => (BotBlockInput)_blockInput;
     public BotFlashInput BotFlash => (BotFlashInput)_flashInput;
+    public BotChargeInput BotCharge => (BotChargeInput)_chargeInput;
     public BotSkillInput BotSkill1 => _skillInputs.Count > 0 ? (BotSkillInput)_skillInputs[0] : null;
     public BotSkillInput BotSkill2 => _skillInputs.Count > 1 ? (BotSkillInput)_skillInputs[1] : null;
     public BotSkillInput BotSkill3 => _skillInputs.Count > 2 ? (BotSkillInput)_skillInputs[2] : null;

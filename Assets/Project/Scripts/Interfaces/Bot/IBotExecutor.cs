@@ -8,4 +8,7 @@ public interface IBotExecutor
     void TriggerAttack();
     void StartBlock();
     void StopBlock();
+    void StartCharge();
+    void StopCharge();
+    void TriggerFlash();
 }

@@ -28,6 +28,19 @@ public class BotRetreatState : BotState
 
         if (_retreatTimer <= 0)
         {
+            if (context.Config.ManaConfig.enableManaCharging && context.Mana != null)
+            {
+                float currentMana = context.Mana.GetCurrentMana();
+                float maxMana = context.Mana.GetMaxMana();
+                float currentManaPercent = maxMana > 0 ? (currentMana / maxMana) * 100f : 100f;
+
+                if (currentManaPercent <= context.Config.ManaConfig.chargeThresholdPercent && 
+                    context.Sensor.Distance > context.Config.Detection.threatRange)
+                {
+                    context.ScheduleTransition(BotBrain.AIState.Charge);
+                    return;
+                }
+            }
             context.ScheduleTransition(BotBrain.AIState.Approach);
         }
     }

@@ -11,4 +11,5 @@ public interface IManaChecker
     /// <returns></returns>
     public bool HasManaReached(float amount);
     public float GetCurrentMana();
+    public float GetMaxMana();
 }

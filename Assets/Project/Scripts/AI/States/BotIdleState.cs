@@ -15,5 +15,16 @@ public class BotIdleState : BotState
         {
             context.ScheduleTransition(BotBrain.AIState.Approach);
         }
+        else if (context.Config.ManaConfig.enableManaCharging && context.Mana != null)
+        {
+            float currentMana = context.Mana.GetCurrentMana();
+            float maxMana = context.Mana.GetMaxMana();
+            float currentManaPercent = maxMana > 0 ? (currentMana / maxMana) * 100f : 100f;
+
+            if (currentManaPercent <= context.Config.ManaConfig.chargeThresholdPercent)
+            {
+                context.ScheduleTransition(BotBrain.AIState.Charge);
+            }
+        }
     }
 }

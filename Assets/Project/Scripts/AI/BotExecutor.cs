@@ -49,4 +49,28 @@ public class BotExecutor : MonoBehaviour, IBotExecutor
             _botInput.BotBlock.StopBlock();
         }
     }
+
+    public void StartCharge()
+    {
+        if (_botInput != null && _botInput.BotCharge != null)
+        {
+            _botInput.BotCharge.StartCharge();
+        }
+    }
+
+    public void StopCharge()
+    {
+        if (_botInput != null && _botInput.BotCharge != null)
+        {
+            _botInput.BotCharge.StopCharge();
+        }
+    }
+
+    public void TriggerFlash()
+    {
+        if (_botInput != null && _botInput.BotFlash != null)
+        {
+            _botInput.BotFlash.TriggerFlash();
+        }
+    }
 }

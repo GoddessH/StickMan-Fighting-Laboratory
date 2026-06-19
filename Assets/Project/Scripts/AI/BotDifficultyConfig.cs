@@ -72,11 +72,25 @@ public class BotDifficultyConfig : ScriptableObject
         public float maxVerticalChase = 5.0f;
     }
 
+    [System.Serializable]
+    public class ManaSettings
+    {
+        [Tooltip("Bật/tắt việc Bot tự động sạc Mana")]
+        public bool enableManaCharging = true;
+        [Tooltip("Ngưỡng Mana dưới mức này (%) để Bot bắt đầu sạc. Ví dụ: 30%")]
+        [Range(0f, 100f)]
+        public float chargeThresholdPercent = 30f;
+        [Tooltip("Sạc Mana đạt mức này (%) thì dừng. Ví dụ: 95%")]
+        [Range(0f, 100f)]
+        public float chargeMaxPercent = 95f;
+    }
+
     public DetectionSettings Detection = new DetectionSettings();
     public TimingSettings Timing = new TimingSettings();
     public WeightSettings Weights = new WeightSettings();
     public PatternSettings Pattern = new PatternSettings();
     public MovementSettings Movement = new MovementSettings();
+    public ManaSettings ManaConfig = new ManaSettings();
 
     [Header("Preset Description")]
     [TextArea(2, 4)]

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [RequireComponent(typeof(BotInput))]
 public class BotBrain : MonoBehaviour, IBotContext
 {
-    public enum AIState { Idle, Approach, Attack, Block, Retreat }
+    public enum AIState { Idle, Approach, Attack, Block, Retreat, Charge }
 
     [Header("Target")]
     [SerializeField] private Transform _target;
@@ -41,6 +41,8 @@ public class BotBrain : MonoBehaviour, IBotContext
     private IBotDecisionPolicy _decisionPolicy;
     private HealthManager _healthManager;
     private float _lastHealthValue;
+    private IManaChecker _mana;
+    private SkillController _skillController;
 
     public BotDifficultyConfig Config => _config;
     public IBotSensor Sensor => _sensor;
@@ -48,6 +50,8 @@ public class BotBrain : MonoBehaviour, IBotContext
     public float AttackTimer => _attackTimer;
     public bool IsTransitionPending => _pendingStates.Count > 0;
     public Transform Target => _target;
+    public IManaChecker Mana => _mana;
+    public SkillController SkillController => _skillController;
 
     private void Awake()
     {
@@ -78,13 +82,17 @@ public class BotBrain : MonoBehaviour, IBotContext
             _healthManager.OnChangeHealth += HandleHealthChanged;
         }
 
+        _mana = GetComponent<IManaChecker>();
+        _skillController = GetComponent<SkillController>();
+
         _statesMap = new Dictionary<AIState, BotState>
         {
             { AIState.Idle, new BotIdleState(this) },
             { AIState.Approach, new BotApproachState(this, _patternTracker) },
             { AIState.Attack, new BotAttackState(this) },
             { AIState.Block, new BotBlockState(this) },
-            { AIState.Retreat, new BotRetreatState(this) }
+            { AIState.Retreat, new BotRetreatState(this) },
+            { AIState.Charge, new BotChargeState(this) }
         };
 
         _thinkTimer = Random.Range(0f, _thinkInterval); // Phân tán điểm khởi đầu tick
@@ -156,9 +164,13 @@ public class BotBrain : MonoBehaviour, IBotContext
             }
             _accumulatedDeltaTime = 0f;
 
-            if (_sensor.ThreatDetected && !IsTransitionPending)
+            if (_sensor.ThreatDetected)
             {
-                ScheduleTransition(_decisionPolicy.PickThreatReaction(_config, _patternTracker));
+                AIState reaction = _decisionPolicy.PickThreatReaction(_config, _patternTracker);
+                if (reaction == AIState.Block || reaction == AIState.Retreat)
+                {
+                    ScheduleTransition(reaction);
+                }
             }
         }
 
@@ -184,12 +196,27 @@ public class BotBrain : MonoBehaviour, IBotContext
         // Đảm bảo trạng thái hiện tại đồng ý cho phép ngắt
         if (_currentState != null && !_currentState.CanInterrupt(nextState)) return;
 
+        // Cơ chế ghi đè khẩn cấp: nếu chuyển sang trạng thái phòng thủ khẩn cấp (Block/Retreat)
+        bool isEmergency = nextState == AIState.Block || nextState == AIState.Retreat;
+        if (isEmergency)
+        {
+            // Clear các trạng thái không phải khẩn cấp đang chờ trong queue
+            if (_pendingStates.Count > 0)
+            {
+                AIState currentPending = _pendingStates.Peek();
+                if (currentPending != AIState.Block && currentPending != AIState.Retreat)
+                {
+                    _pendingStates.Clear();
+                }
+            }
+        }
+
         // Tránh xếp hàng trùng lặp liên tục cùng một trạng thái
         if (_pendingStates.Contains(nextState)) return;
 
         _pendingStates.Enqueue(nextState);
 
-        // Nếu đây là trạng thái đầu tiên được xếp hàng, bắt đầu tính giờ phản xạ
+        // Nếu đây là trạng thái đầu tiên hoặc vừa bị clear và làm mới, bắt đầu tính giờ phản xạ
         if (_pendingStates.Count == 1)
         {
             ResetReactionTimer(nextState);

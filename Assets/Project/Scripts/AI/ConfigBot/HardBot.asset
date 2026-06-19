@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: HardBot
   m_EditorClassIdentifier: 
   Detection:
-    detectRange: 6
+    detectRange: 10
     attackRange: 3.8
-    threatRange: 2
+    threatRange: 3.8
   Timing:
-    reactionDelay: 0.319
+    reactionDelay: 0.076
     attackCooldown: 0.5
     blockDuration: 5
     retreatDuration: 1
@@ -35,4 +35,8 @@ MonoBehaviour:
   Movement:
     flyThreshold: 0.1
     maxVerticalChase: 4
+  ManaConfig:
+    enableManaCharging: 1
+    chargeThresholdPercent: 30
+    chargeMaxPercent: 100
   description: 

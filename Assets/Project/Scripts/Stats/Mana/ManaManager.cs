@@ -75,5 +75,7 @@ public class ManaManager : MonoBehaviour, IManaRegenerator, IManaConsumer, IMana
     bool IManaChecker.HasManaReached(float amount) => _currentMana >= amount;
 
     float IManaChecker.GetCurrentMana() => _currentMana;
+
+    float IManaChecker.GetMaxMana() => _maxMana;
     #endregion
 }

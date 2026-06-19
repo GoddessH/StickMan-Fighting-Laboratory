@@ -11,9 +11,8 @@ public class BotAttackState : BotState
 
     public override bool CanInterrupt(BotBrain.AIState incomingState)
     {
-        if (_attackSequenceTimer <= 0) return true;
-        // Tấn công chỉ có thể bị ngắt bởi trạng thái tự vệ khẩn cấp (Block/Retreat)
-        return incomingState == BotBrain.AIState.Block || incomingState == BotBrain.AIState.Retreat;
+        // Khi đang thực hiện chuỗi tấn công combo, không cho phép bất kỳ trạng thái nào ngắt (tránh việc Bot tự hủy đòn đánh để đỡ/lùi)
+        return _attackSequenceTimer <= 0;
     }
 
     public override void Enter()
