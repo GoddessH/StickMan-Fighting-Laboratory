@@ -80,7 +80,7 @@ public class BotSensor : MonoBehaviour, IBotSensor
 
             if (_targetStateController != null && _targetStateController.CurrentStateType == StateType.Attack)
             {
-                if (Distance <= _config.threatRange)
+                if (Distance <= _config.Detection.threatRange)
                 {
                     return true;
                 }
@@ -94,7 +94,7 @@ public class BotSensor : MonoBehaviour, IBotSensor
 
         int count = Physics2D.OverlapCircle(
             transform.position,
-            _config.threatRange,
+            _config.Detection.threatRange,
             contactFilter,
             s_colliderBuffer
         );

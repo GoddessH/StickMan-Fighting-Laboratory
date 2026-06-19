@@ -8,19 +8,26 @@ public class BotBlockState : BotState
 
     public BotBlockState(IBotContext context) : base(context) {}
 
+    public override bool CanInterrupt(BotBrain.AIState incomingState)
+    {
+        if (_blockTimer <= 0) return true;
+        // Đỡ đòn chỉ có thể bị ngắt bởi việc Rút lui (Retreat) khẩn cấp
+        return incomingState == BotBrain.AIState.Retreat;
+    }
+
     public override void Enter()
     {
-        executor.SetMovement(Vector2.zero);
-        _blockTimer = config.blockDuration;
-        executor.StartBlock();
+        context.Executor.SetMovement(Vector2.zero);
+        _blockTimer = context.Config.Timing.blockDuration;
+        context.Executor.StartBlock();
     }
 
     public override void Update()
     {
-        executor.SetMovement(Vector2.zero);
+        context.Executor.SetMovement(Vector2.zero);
         _blockTimer -= Time.deltaTime;
 
-        bool threatStillDetected = sensor.ThreatDetected;
+        bool threatStillDetected = context.Sensor.ThreatDetected;
         if (_blockTimer <= 0 || !threatStillDetected)
         {
             context.ScheduleTransition(BotBrain.AIState.Approach);
@@ -29,6 +36,6 @@ public class BotBlockState : BotState
 
     public override void Exit()
     {
-        executor.StopBlock();
+        context.Executor.StopBlock();
     }
 }

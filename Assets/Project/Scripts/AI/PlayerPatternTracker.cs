@@ -49,7 +49,7 @@ public class PlayerPatternTracker : MonoBehaviour
 
     public void Tick(float deltaTime)
     {
-        if (_target == null || _config == null || !_config.enablePatternTracking || !_isTrackingEnabled)
+        if (_target == null || _config == null || !_config.Pattern.enablePatternTracking || !_isTrackingEnabled)
         {
             return;
         }
@@ -65,7 +65,7 @@ public class PlayerPatternTracker : MonoBehaviour
         }
 
         // Tính alpha dựa trên half-life (thời gian bán rã để quên lối chơi cũ)
-        float halfLife = _config.patternTrackingHalfLife;
+        float halfLife = _config.Pattern.patternTrackingHalfLife;
         if (halfLife <= 0f) halfLife = 3.0f;
         float lambda = Mathf.Log(2f) / halfLife;
         float alpha = 1f - Mathf.Exp(-deltaTime * lambda);
@@ -102,7 +102,7 @@ public class PlayerPatternTracker : MonoBehaviour
         {
             // Trình fallback nếu không tìm thấy AnimationHandler
             float diffY = _target.position.y - transform.position.y;
-            if (Mathf.Abs(diffY) > _config.flyThreshold)
+            if (Mathf.Abs(diffY) > _config.Movement.flyThreshold)
             {
                 isAirborne = 1f;
             }

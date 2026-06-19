@@ -1,9 +1,6 @@
 public abstract class BotState
 {
     protected IBotContext context;
-    protected IBotSensor sensor => context.Sensor;
-    protected IBotExecutor executor => context.Executor;
-    protected BotDifficultyConfig config => context.Config;
 
     public virtual int Priority => 0;
 

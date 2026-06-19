@@ -4,13 +4,13 @@ public class PatternAdaptivePolicy : IBotDecisionPolicy
 {
     public BotBrain.AIState PickAttackAction(BotDifficultyConfig config, PlayerPatternTracker tracker)
     {
-        float attack = config.attackWeight;
-        float idle = config.idleWeight;
+        float attack = config.Weights.attackWeight;
+        float idle = config.Weights.idleWeight;
 
-        if (config.enablePatternTracking && tracker != null)
+        if (config.Pattern.enablePatternTracking && tracker != null)
         {
-            float defScale = tracker.DefensivenessScore * config.patternAdaptationStrength;
-            attack += config.attackWeight * defScale;
+            float defScale = tracker.DefensivenessScore * config.Pattern.patternAdaptationStrength;
+            attack += config.Weights.attackWeight * defScale;
 
             if (defScale > 0.3f)
             {
@@ -23,15 +23,15 @@ public class PatternAdaptivePolicy : IBotDecisionPolicy
 
     public BotBrain.AIState PickThreatReaction(BotDifficultyConfig config, PlayerPatternTracker tracker)
     {
-        float block = config.blockWeight;
-        float retreat = config.retreatWeight;
-        float idle = config.idleWeight;
+        float block = config.Weights.blockWeight;
+        float retreat = config.Weights.retreatWeight;
+        float idle = config.Weights.idleWeight;
 
-        if (config.enablePatternTracking && tracker != null)
+        if (config.Pattern.enablePatternTracking && tracker != null)
         {
-            float aggressionScale = tracker.AggressionScore * config.patternAdaptationStrength;
-            block += config.blockWeight * aggressionScale;
-            retreat += config.retreatWeight * aggressionScale;
+            float aggressionScale = tracker.AggressionScore * config.Pattern.patternAdaptationStrength;
+            block += config.Weights.blockWeight * aggressionScale;
+            retreat += config.Weights.retreatWeight * aggressionScale;
             idle = Mathf.Max(0f, idle - idle * aggressionScale * 0.5f);
 
             Debug.Log($"[BotBrain] Thích ứng: Người chơi tấn công nhiều (Aggression: {tracker.AggressionScore:F2}), tăng blockWeight -> {block:F1}, retreatWeight -> {retreat:F1}");

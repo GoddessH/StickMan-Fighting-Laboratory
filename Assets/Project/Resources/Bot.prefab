@@ -294,6 +294,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adc3954075e448640ba13546b1fa70d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _balanceThreshold:
+    _min: 1.8
+    _max: 2.5
+  _rayShootRate: 0.05
 --- !u!114 &7557384082861624553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,10 +413,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
-  _config: {fileID: 11400000, guid: 32d4f38017ea3c3488ab93d6e4622167, type: 2}
+  _config: {fileID: 11400000, guid: e6b092182656e2840b286967b51f0ac0, type: 2}
   _playerHitBoxMask:
     serializedVersion: 2
     m_Bits: 256
+  _thinkInterval: 0.05
   _currentAIState: 0
 --- !u!114 &8467658984099497892
 MonoBehaviour:
@@ -436,6 +444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1523c5247e79354da366138c1f61db1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _indicatorRoot: {fileID: 0}
 --- !u!114 &-1479159093166560016
 MonoBehaviour:
   m_ObjectHideFlags: 0

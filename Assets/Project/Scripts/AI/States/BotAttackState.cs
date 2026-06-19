@@ -18,20 +18,20 @@ public class BotAttackState : BotState
 
     public override void Enter()
     {
-        executor.SetMovement(Vector2.zero);
+        context.Executor.SetMovement(Vector2.zero);
 
         // Chọn số đòn combo ngẫu nhiên từ 1 đến maxComboHits
-        int comboHits = Random.Range(1, config.maxComboHits + 1);
-        _attackSequenceTimer = comboHits * config.singleAttackDuration;
-        _nextComboHitTimer = config.singleAttackDuration;
+        int comboHits = Random.Range(1, context.Config.Timing.maxComboHits + 1);
+        _attackSequenceTimer = comboHits * context.Config.Timing.singleAttackDuration;
+        _nextComboHitTimer = context.Config.Timing.singleAttackDuration;
 
         context.SetAttackCooldown();
-        executor.TriggerAttack(); // kích hoạt đòn đầu tiên
+        context.Executor.TriggerAttack(); // kích hoạt đòn đầu tiên
     }
 
     public override void Update()
     {
-        executor.SetMovement(Vector2.zero);
+        context.Executor.SetMovement(Vector2.zero);
 
         // Duy trì kích hoạt combo bằng các đòn chém rời rạc đúng thời điểm thay vì spam liên tục giữ nút
         if (_attackSequenceTimer > 0)
@@ -40,8 +40,8 @@ public class BotAttackState : BotState
             _nextComboHitTimer -= Time.deltaTime;
             if (_nextComboHitTimer <= 0 && _attackSequenceTimer > 0)
             {
-                executor.TriggerAttack();
-                _nextComboHitTimer = config.singleAttackDuration;
+                context.Executor.TriggerAttack();
+                _nextComboHitTimer = context.Config.Timing.singleAttackDuration;
             }
         }
         else

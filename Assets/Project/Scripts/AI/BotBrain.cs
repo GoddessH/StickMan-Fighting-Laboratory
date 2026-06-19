@@ -34,7 +34,7 @@ public class BotBrain : MonoBehaviour, IBotContext
 
     private float _attackTimer;
     private float _reactionTimer;
-    private AIState? _pendingState;
+    private readonly Queue<AIState> _pendingStates = new Queue<AIState>();
 
     private float _thinkTimer;
     private float _accumulatedDeltaTime;
@@ -45,9 +45,8 @@ public class BotBrain : MonoBehaviour, IBotContext
     public BotDifficultyConfig Config => _config;
     public IBotSensor Sensor => _sensor;
     public IBotExecutor Executor => _executor;
-    public PlayerPatternTracker PatternTracker => _patternTracker;
     public float AttackTimer => _attackTimer;
-    public bool IsTransitionPending => _pendingState.HasValue;
+    public bool IsTransitionPending => _pendingStates.Count > 0;
     public Transform Target => _target;
 
     private void Awake()
@@ -62,7 +61,7 @@ public class BotBrain : MonoBehaviour, IBotContext
         _patternTracker.Init(_config, _target);
 
         // Khởi tạo chính sách quyết định dựa theo cấu hình
-        if (_config != null && _config.enablePatternTracking)
+        if (_config != null && _config.Pattern.enablePatternTracking)
         {
             _decisionPolicy = new PatternAdaptivePolicy();
         }
@@ -82,7 +81,7 @@ public class BotBrain : MonoBehaviour, IBotContext
         _statesMap = new Dictionary<AIState, BotState>
         {
             { AIState.Idle, new BotIdleState(this) },
-            { AIState.Approach, new BotApproachState(this) },
+            { AIState.Approach, new BotApproachState(this, _patternTracker) },
             { AIState.Attack, new BotAttackState(this) },
             { AIState.Block, new BotBlockState(this) },
             { AIState.Retreat, new BotRetreatState(this) }
@@ -119,11 +118,15 @@ public class BotBrain : MonoBehaviour, IBotContext
         _attackTimer -= Time.unscaledDeltaTime;
         _reactionTimer -= Time.unscaledDeltaTime;
 
-        // Chuyển trạng thái tức thời khi hết thời gian phản xạ (Reaction Delay)
-        if (_pendingState.HasValue && _reactionTimer <= 0)
+        // Chuyển trạng thái từ Queue khi hết thời gian phản xạ (Reaction Delay)
+        if (_pendingStates.Count > 0 && _reactionTimer <= 0)
         {
-            ExecuteTransition(_pendingState.Value);
-            _pendingState = null;
+            AIState nextState = _pendingStates.Dequeue();
+            ExecuteTransition(nextState);
+            if (_pendingStates.Count > 0)
+            {
+                ResetReactionTimer(_pendingStates.Peek());
+            }
         }
 
         _accumulatedDeltaTime += Time.unscaledDeltaTime;
@@ -147,15 +150,15 @@ public class BotBrain : MonoBehaviour, IBotContext
             // Nếu vẫn chưa có target hoặc config, dừng xử lý FSM/PatternTracker của Tick này
             if (_target == null || _config == null) return;
 
-            if (_config.enablePatternTracking)
+            if (_config.Pattern.enablePatternTracking)
             {
                 _patternTracker.Tick(_accumulatedDeltaTime);
             }
             _accumulatedDeltaTime = 0f;
 
-            if (_sensor.ThreatDetected && _currentAIState != AIState.Block && _currentAIState != AIState.Retreat && !_pendingState.HasValue)
+            if (_sensor.ThreatDetected && !IsTransitionPending)
             {
-                ScheduleTransition(PickThreatReaction());
+                ScheduleTransition(_decisionPolicy.PickThreatReaction(_config, _patternTracker));
             }
         }
 
@@ -176,39 +179,29 @@ public class BotBrain : MonoBehaviour, IBotContext
         _lastHealthValue = currentHealth;
     }
 
-    public AIState PickAttackAction()
-    {
-        if (_decisionPolicy == null) return AIState.Idle;
-        return _decisionPolicy.PickAttackAction(_config, _patternTracker);
-    }
-
-    public AIState PickThreatReaction()
-    {
-        if (_decisionPolicy == null) return AIState.Idle;
-        return _decisionPolicy.PickThreatReaction(_config, _patternTracker);
-    }
-
     public void ScheduleTransition(AIState nextState)
     {
-        if (_pendingState == nextState) return;
-
-        // Đảm bảo trạng thái hiện tại đồng ý cho phép ngắt đè đòn
+        // Đảm bảo trạng thái hiện tại đồng ý cho phép ngắt
         if (_currentState != null && !_currentState.CanInterrupt(nextState)) return;
 
-        if (_pendingState.HasValue && GetStatePriority(nextState) < GetStatePriority(_pendingState.Value)) return;
+        // Tránh xếp hàng trùng lặp liên tục cùng một trạng thái
+        if (_pendingStates.Contains(nextState)) return;
 
-        _pendingState = nextState;
-        _reactionTimer = _config.reactionDelay * (nextState == AIState.Block || nextState == AIState.Retreat ? 0.25f : 1f);
-    }
+        _pendingStates.Enqueue(nextState);
 
-    private int GetStatePriority(AIState state)
-    {
-        if (_statesMap.TryGetValue(state, out var botState))
+        // Nếu đây là trạng thái đầu tiên được xếp hàng, bắt đầu tính giờ phản xạ
+        if (_pendingStates.Count == 1)
         {
-            return botState.Priority;
+            ResetReactionTimer(nextState);
         }
-        return 0;
     }
+
+    private void ResetReactionTimer(AIState state)
+    {
+        _reactionTimer = _config.Timing.reactionDelay * (state == AIState.Block || state == AIState.Retreat ? 0.25f : 1f);
+    }
+
+
 
     private void ExecuteTransition(AIState nextState)
     {
@@ -220,7 +213,7 @@ public class BotBrain : MonoBehaviour, IBotContext
         OnStateChanged?.Invoke(prevState, nextState);
     }
 
-    public void SetAttackCooldown() => _attackTimer = _config.attackCooldown;
+    public void SetAttackCooldown() => _attackTimer = _config.Timing.attackCooldown;
 
     public void SetTarget(Transform target)
     {
@@ -245,7 +238,7 @@ public class BotBrain : MonoBehaviour, IBotContext
         _sensor?.Init(config, _playerHitBoxMask);
         _patternTracker?.Init(config, _target);
 
-        if (config != null && config.enablePatternTracking)
+        if (config != null && config.Pattern.enablePatternTracking)
         {
             _decisionPolicy = new PatternAdaptivePolicy();
         }
@@ -253,6 +246,8 @@ public class BotBrain : MonoBehaviour, IBotContext
         {
             _decisionPolicy = new WeightedRandomPolicy();
         }
+
+        _pendingStates.Clear();
     }
 
 #if UNITY_EDITOR
@@ -260,11 +255,11 @@ public class BotBrain : MonoBehaviour, IBotContext
     {
         if (_config == null) return;
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, _config.detectRange);
+        Gizmos.DrawWireSphere(transform.position, _config.Detection.detectRange);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, _config.threatRange);
+        Gizmos.DrawWireSphere(transform.position, _config.Detection.threatRange);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _config.attackRange);
+        Gizmos.DrawWireSphere(transform.position, _config.Detection.attackRange);
     }
 #endif
 }

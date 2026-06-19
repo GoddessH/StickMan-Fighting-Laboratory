@@ -4,16 +4,16 @@ public class WeightedRandomPolicy : IBotDecisionPolicy
 {
     public BotBrain.AIState PickAttackAction(BotDifficultyConfig config, PlayerPatternTracker tracker)
     {
-        float attack = config.attackWeight;
-        float idle = config.idleWeight;
+        float attack = config.Weights.attackWeight;
+        float idle = config.Weights.idleWeight;
         return Random.Range(0f, attack + idle) < attack ? BotBrain.AIState.Attack : BotBrain.AIState.Idle;
     }
 
     public BotBrain.AIState PickThreatReaction(BotDifficultyConfig config, PlayerPatternTracker tracker)
     {
-        float block = config.blockWeight;
-        float retreat = config.retreatWeight;
-        float idle = config.idleWeight;
+        float block = config.Weights.blockWeight;
+        float retreat = config.Weights.retreatWeight;
+        float idle = config.Weights.idleWeight;
 
         float total = block + retreat + idle;
         float roll = Random.Range(0f, total);

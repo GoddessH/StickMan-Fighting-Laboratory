@@ -6,12 +6,12 @@ public class BotIdleState : BotState
 
     public override void Enter()
     {
-        executor.SetMovement(Vector2.zero);
+        context.Executor.SetMovement(Vector2.zero);
     }
 
     public override void Update()
     {
-        if (sensor.Distance <= config.detectRange)
+        if (context.Sensor.Distance <= context.Config.Detection.detectRange)
         {
             context.ScheduleTransition(BotBrain.AIState.Approach);
         }
