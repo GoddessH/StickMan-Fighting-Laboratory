@@ -47,7 +47,11 @@ public class TargetGroupCalculator
 
         float absoluteX = Mathf.Abs(delta.x);
         float absoluteY = Mathf.Abs(delta.y);
-        if (!IsEnemyInBound(absoluteX, absoluteY)) return;
+        if (!IsEnemyInBound(absoluteX, absoluteY))
+        {
+            _targetGroup.Targets[_enemyIndex].Weight = 0;
+            return;
+        }
 
         float deltaCoordinate = Mathf.Clamp(absoluteX, _data.DeadZone.width, _data.BoundZone.width);
         float deltaY = Mathf.Clamp(absoluteY, _data.DeadZone.height, _data.BoundZone.height);
