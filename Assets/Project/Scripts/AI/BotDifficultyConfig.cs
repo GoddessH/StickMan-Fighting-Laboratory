@@ -83,6 +83,8 @@ public class BotDifficultyConfig : ScriptableObject
         [Tooltip("Sạc Mana đạt mức này (%) thì dừng. Ví dụ: 95%")]
         [Range(0f, 100f)]
         public float chargeMaxPercent = 95f;
+        [Tooltip("Thời gian sạc Mana tối đa trong một lần sạc (giây)")]
+        public float maxChargeDuration = 1.5f;
     }
 
     public DetectionSettings Detection = new DetectionSettings();
@@ -95,4 +97,23 @@ public class BotDifficultyConfig : ScriptableObject
     [Header("Preset Description")]
     [TextArea(2, 4)]
     public string description = "";
+
+    public void ValidateValues()
+    {
+        if (ManaConfig != null)
+        {
+            float maxPercent = ManaConfig.chargeMaxPercent;
+            if (ManaConfig.chargeThresholdPercent >= maxPercent)
+            {
+                ManaConfig.chargeThresholdPercent = Mathf.Max(0f, maxPercent - 15f);
+            }
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        ValidateValues();
+    }
+#endif
 }

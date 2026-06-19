@@ -11,11 +11,6 @@ public class PatternAdaptivePolicy : IBotDecisionPolicy
         {
             float defScale = tracker.DefensivenessScore * config.Pattern.patternAdaptationStrength;
             attack += config.Weights.attackWeight * defScale;
-
-            if (defScale > 0.3f)
-            {
-                Debug.Log($"[BotBrain] Thích ứng: Người chơi thủ nhiều (Defensiveness: {tracker.DefensivenessScore:F2}), tăng attackWeight -> {attack:F1}");
-            }
         }
 
         return Random.Range(0f, attack + idle) < attack ? BotBrain.AIState.Attack : BotBrain.AIState.Idle;
@@ -33,8 +28,6 @@ public class PatternAdaptivePolicy : IBotDecisionPolicy
             block += config.Weights.blockWeight * aggressionScale;
             retreat += config.Weights.retreatWeight * aggressionScale;
             idle = Mathf.Max(0f, idle - idle * aggressionScale * 0.5f);
-
-            Debug.Log($"[BotBrain] Thích ứng: Người chơi tấn công nhiều (Aggression: {tracker.AggressionScore:F2}), tăng blockWeight -> {block:F1}, retreatWeight -> {retreat:F1}");
         }
 
         float total = block + retreat + idle;

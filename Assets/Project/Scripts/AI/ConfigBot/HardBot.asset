@@ -38,5 +38,6 @@ MonoBehaviour:
   ManaConfig:
     enableManaCharging: 1
     chargeThresholdPercent: 30
-    chargeMaxPercent: 100
+    chargeMaxPercent: 95
+    maxChargeDuration: 3
   description: 

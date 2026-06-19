@@ -2,26 +2,35 @@ using UnityEngine;
 
 public class BotChargeState : BotState
 {
+    private float _chargeDurationTimer;
+
     public BotChargeState(IBotContext context) : base(context) {}
 
     public override void Enter()
     {
         context.Executor.SetMovement(Vector2.zero);
         context.Executor.StartCharge();
+        // Lấy thời gian sạc tối đa từ cấu hình (mặc định 1.5 giây nếu cấu hình rỗng)
+        _chargeDurationTimer = context.Config != null ? context.Config.ManaConfig.maxChargeDuration : 1.5f;
     }
 
     public override void Update()
     {
         context.Executor.SetMovement(Vector2.zero);
+        context.Executor.StartCharge(); // Gọi liên tục mỗi frame để duy trì sạc và tự động kích hoạt lại nếu bị gián đoạn (như trúng đòn Hurt)
+
+        // Giảm thời gian sạc tối đa
+        _chargeDurationTimer -= Time.deltaTime;
+        if (_chargeDurationTimer <= 0)
+        {
+            context.ScheduleTransition(BotBrain.AIState.Approach);
+            return;
+        }
 
         if (context.Mana != null)
         {
-            float currentMana = context.Mana.GetCurrentMana();
-            float maxMana = context.Mana.GetMaxMana();
-            float currentManaPercent = maxMana > 0 ? (currentMana / maxMana) * 100f : 100f;
-
-            // Nếu mana đã đầy hoặc đạt ngưỡng tối đa cấu hình, dừng sạc và tiếp cận mục tiêu
-            if (context.Mana.IsFullMana() || currentManaPercent >= context.Config.ManaConfig.chargeMaxPercent)
+            // Sử dụng extension GetManaPercent() giúp rút ngắn code và tránh lặp phép tính
+            if (context.Mana.IsFullMana() || context.Mana.GetManaPercent() >= context.Config.ManaConfig.chargeMaxPercent)
             {
                 context.ScheduleTransition(BotBrain.AIState.Approach);
             }

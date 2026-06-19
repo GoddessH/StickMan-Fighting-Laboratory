@@ -108,6 +108,7 @@ public class BotBrain : MonoBehaviour, IBotContext
 
     private void Start()
     {
+        _config?.ValidateValues();
         if (_target != null)
         {
             _sensor.SetTarget(_target);
@@ -122,11 +123,29 @@ public class BotBrain : MonoBehaviour, IBotContext
     {
         _executor.ClearAttackInput();
 
-        // Giảm trừ bộ đếm thời gian thực (unscaled) độc lập với Time.timeScale
+        UpdateTimers();
+        ProcessPendingTransitions();
+
+        _accumulatedDeltaTime += Time.unscaledDeltaTime;
+
+        // Tần suất suy nghĩ của AI (Rate-limited, chạy kể cả khi target = null để sensor có thể quét tìm Player)
+        _thinkTimer -= Time.unscaledDeltaTime;
+        if (_thinkTimer <= 0)
+        {
+            TickAI();
+        }
+
+        UpdateActiveState();
+    }
+
+    private void UpdateTimers()
+    {
         _attackTimer -= Time.unscaledDeltaTime;
         _reactionTimer -= Time.unscaledDeltaTime;
+    }
 
-        // Chuyển trạng thái từ Queue khi hết thời gian phản xạ (Reaction Delay)
+    private void ProcessPendingTransitions()
+    {
         if (_pendingStates.Count > 0 && _reactionTimer <= 0)
         {
             AIState nextState = _pendingStates.Dequeue();
@@ -136,44 +155,43 @@ public class BotBrain : MonoBehaviour, IBotContext
                 ResetReactionTimer(_pendingStates.Peek());
             }
         }
+    }
 
-        _accumulatedDeltaTime += Time.unscaledDeltaTime;
+    private void TickAI()
+    {
+        _thinkTimer = _thinkInterval;
 
-        // Tần suất suy nghĩ của AI (Rate-limited, chạy kể cả khi target = null để sensor có thể quét tìm Player)
-        _thinkTimer -= Time.unscaledDeltaTime;
-        if (_thinkTimer <= 0)
+        if (_sensor != null)
         {
-            _thinkTimer = _thinkInterval;
+            _sensor.UpdateSensor();
 
-            if (_sensor != null)
+            if (_target == null && _sensor.Target != null)
             {
-                _sensor.UpdateSensor();
-
-                if (_target == null && _sensor.Target != null)
-                {
-                    SetTarget(_sensor.Target);
-                }
-            }
-
-            // Nếu vẫn chưa có target hoặc config, dừng xử lý FSM/PatternTracker của Tick này
-            if (_target == null || _config == null) return;
-
-            if (_config.Pattern.enablePatternTracking)
-            {
-                _patternTracker.Tick(_accumulatedDeltaTime);
-            }
-            _accumulatedDeltaTime = 0f;
-
-            if (_sensor.ThreatDetected)
-            {
-                AIState reaction = _decisionPolicy.PickThreatReaction(_config, _patternTracker);
-                if (reaction == AIState.Block || reaction == AIState.Retreat)
-                {
-                    ScheduleTransition(reaction);
-                }
+                SetTarget(_sensor.Target);
             }
         }
 
+        // Nếu vẫn chưa có target hoặc config, dừng xử lý FSM/PatternTracker của Tick này
+        if (_target == null || _config == null) return;
+
+        if (_config.Pattern.enablePatternTracking)
+        {
+            _patternTracker.Tick(_accumulatedDeltaTime);
+        }
+        _accumulatedDeltaTime = 0f;
+
+        if (_sensor.ThreatDetected)
+        {
+            AIState reaction = _decisionPolicy.PickThreatReaction(_config, _patternTracker);
+            if (reaction == AIState.Block || reaction == AIState.Retreat)
+            {
+                ScheduleTransition(reaction);
+            }
+        }
+    }
+
+    private void UpdateActiveState()
+    {
         // Nếu vẫn chưa có target hoặc config, không chạy FSM Update của Frame này
         if (_target == null || _config == null) return;
 
@@ -237,6 +255,7 @@ public class BotBrain : MonoBehaviour, IBotContext
         _currentAIState = nextState;
         _currentState = _statesMap[nextState];
         _currentState.Enter();
+        Debug.Log($"[BotBrain] {gameObject.name} chuyển trạng thái: {prevState} -> {nextState}");
         OnStateChanged?.Invoke(prevState, nextState);
     }
 
@@ -262,6 +281,7 @@ public class BotBrain : MonoBehaviour, IBotContext
     public void SetConfig(BotDifficultyConfig config)
     {
         _config = config;
+        _config?.ValidateValues();
         _sensor?.Init(config, _playerHitBoxMask);
         _patternTracker?.Init(config, _target);
 

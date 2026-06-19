@@ -49,7 +49,14 @@ public abstract class CharacterInput: MonoBehaviourPun
         }
     }
 
-    public EventInput ChargeInput => _chargeInput;
+    public EventInput ChargeInput 
+    {
+        get
+        {
+            EnsureSetup();
+            return _chargeInput;
+        }
+    }
 
     public System.Collections.Generic.IReadOnlyList<EventInput> SkillInputs
     {
