@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public struct IntervalData
+public struct Interval
 {
     //
     [SerializeField] private float _min;
@@ -11,11 +11,13 @@ public struct IntervalData
     public float Min => _min;
     public float Max => _max;
 
-    public IntervalData(float min, float max)
+    public Interval(float min, float max)
     {
         _min = min;
         _max = max;
     }
 
-    public float GetIntervalLenght() => Mathf.Abs(_max - _min);
+    public float GetLength() => Mathf.Abs(_max - _min);
+
+    public Vector2 ConvertToVector2() => new Vector2(_min, _max);
 }

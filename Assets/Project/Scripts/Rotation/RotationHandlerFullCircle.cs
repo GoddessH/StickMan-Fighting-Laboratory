@@ -5,7 +5,7 @@ public class RotationHandlerFullCircle : RotationHandler
 {
     //
     [SerializeField] private LayerMask _groundMask;
-    [SerializeField] private IntervalData _balanceThreshold = new IntervalData(1.8f, 2.5f);
+    [SerializeField] private Interval _balanceThreshold = new Interval(1.8f, 2.5f);
     [SerializeField] private float _rayShootRate = .05f;
 
     private float _balanceWeight = 0;
@@ -20,8 +20,8 @@ public class RotationHandlerFullCircle : RotationHandler
 
         float minPositionY = transform.position.y - _balanceThreshold.Min;
         float distanceY = Mathf.Abs(minPositionY - rayHit.point.y);
-        distanceY = _balanceThreshold.GetIntervalLenght() - distanceY;
-        _balanceWeight = distanceY / _balanceThreshold.GetIntervalLenght();
+        distanceY = _balanceThreshold.GetLength() - distanceY;
+        _balanceWeight = distanceY / _balanceThreshold.GetLength();
     }
 
     #region Implement RotationHandler

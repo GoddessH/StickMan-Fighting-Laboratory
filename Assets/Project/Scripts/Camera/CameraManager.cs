@@ -4,13 +4,23 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     // 
-    [SerializeField] private CinemachineCamera _cinemachineCamera;
+    #region Supporter
+    [SerializeField] private TargetGroupCalculator _targetGroupCalculator = new TargetGroupCalculator();
+    #endregion
 
-    public void SetCameraTarget(Transform target)
+    private void Update()
     {
-        if (_cinemachineCamera == null) return;
+        _targetGroupCalculator.Execute();
+    }
 
-        _cinemachineCamera.Follow = target;
-        Debug.Log("End");
+    private void SetFollowTarget(Transform owner, Transform enemy)
+    {
+        _targetGroupCalculator.Init(owner, enemy);
+    }
+
+    public void Setup(Transform owner, Transform enemy)
+    {
+        if (owner == null) return;
+        SetFollowTarget(owner, enemy);
     }
 }

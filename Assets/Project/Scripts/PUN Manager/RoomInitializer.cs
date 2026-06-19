@@ -11,6 +11,8 @@ public class RoomInitializer
     [SerializeField] private SpawnerManager _spawnerManagerPrefab;
     [SerializeField] private UIInMatchManager _uiInMatchManager;
 
+    private bool CheckOwnerClient(Character fighter)
+        => fighter != null && fighter.photonView.IsMine && fighter is not BotController;
 
     private void SetupFighterFacing(Character fighterA, Character fighterB)
     {
@@ -20,18 +22,16 @@ public class RoomInitializer
 
     private void SetupFighterIndicator(Character fighterA, Character fighterB)
     {
-        fighterA?.VisualRoot?.IndicatorRoot?.SetupIndicator(fighterB?.VisualRoot?.IndicatorRoot);
-        fighterB?.VisualRoot?.IndicatorRoot?.SetupIndicator(fighterA?.VisualRoot?.IndicatorRoot);
+        if (CheckOwnerClient(fighterA)) fighterA?.VisualRoot?.IndicatorRoot?.SetupIndicator(fighterB?.VisualRoot?.IndicatorRoot);
+        if (CheckOwnerClient(fighterB)) fighterB?.VisualRoot?.IndicatorRoot?.SetupIndicator(fighterA?.VisualRoot?.IndicatorRoot);
     }
 
-    private void SetupCamera(Stack<Character> fighterStack)
+    private void SetupCamera(Character fighterA, Character fighterB)
     {
         if (_cameraManager == null) return;
-        foreach(var fighter in fighterStack)
-        {
-            if (fighter == null || !fighter.photonView.IsMine) continue;
-            _cameraManager.SetCameraTarget(fighter.transform);
-        }
+
+        if (CheckOwnerClient(fighterA)) _cameraManager.Setup(fighterA.transform, fighterB.transform);
+        if (CheckOwnerClient(fighterB)) _cameraManager.Setup(fighterB.transform, fighterA.transform);
     }
 
     public void SetupMatch()
@@ -46,11 +46,10 @@ public class RoomInitializer
     {
         if (fighterStack == null || fighterStack.Count != 2) return;
 
-        SetupCamera(fighterStack);
-
         Character secondFighter = fighterStack.Pop();
         Character firstFighter = fighterStack.Pop();
 
+        SetupCamera(secondFighter, firstFighter);
         SetupFighterFacing(secondFighter, firstFighter);
         SetupFighterIndicator(secondFighter, firstFighter);
     }
