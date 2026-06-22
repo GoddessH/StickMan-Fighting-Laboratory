@@ -72,7 +72,7 @@ public class BotApproachState : BotState
             yMove = 1f;
         }
         // Hạ xuống nếu Bot cao hơn Player
-        else if (context.Sensor.DistanceY < -dynamicFlyThreshold)
+        else if (context.Sensor.DistanceY < -dynamicFlyThreshold && Mathf.Abs(context.Sensor.DistanceY) <= context.Config.Movement.maxVerticalChase)
         {
             yMove = -1f;
         }

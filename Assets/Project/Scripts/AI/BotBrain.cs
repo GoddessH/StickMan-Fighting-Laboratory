@@ -34,7 +34,7 @@ public class BotBrain : MonoBehaviour, IBotContext
 
     private float _attackTimer;
     private float _reactionTimer;
-    private readonly Queue<AIState> _pendingStates = new Queue<AIState>();
+    private AIState? _pendingState;
 
     private float _thinkTimer;
     private float _accumulatedDeltaTime;
@@ -48,7 +48,7 @@ public class BotBrain : MonoBehaviour, IBotContext
     public IBotSensor Sensor => _sensor;
     public IBotExecutor Executor => _executor;
     public float AttackTimer => _attackTimer;
-    public bool IsTransitionPending => _pendingStates.Count > 0;
+    public bool IsTransitionPending => _pendingState.HasValue;
     public Transform Target => _target;
     public IManaChecker Mana => _mana;
     public SkillController SkillController => _skillController;
@@ -126,10 +126,10 @@ public class BotBrain : MonoBehaviour, IBotContext
         UpdateTimers();
         ProcessPendingTransitions();
 
-        _accumulatedDeltaTime += Time.unscaledDeltaTime;
+        _accumulatedDeltaTime += Time.deltaTime;
 
         // Tần suất suy nghĩ của AI (Rate-limited, chạy kể cả khi target = null để sensor có thể quét tìm Player)
-        _thinkTimer -= Time.unscaledDeltaTime;
+        _thinkTimer -= Time.deltaTime;
         if (_thinkTimer <= 0)
         {
             TickAI();
@@ -140,20 +140,20 @@ public class BotBrain : MonoBehaviour, IBotContext
 
     private void UpdateTimers()
     {
-        _attackTimer -= Time.unscaledDeltaTime;
-        _reactionTimer -= Time.unscaledDeltaTime;
+        _attackTimer -= Time.deltaTime;
+        _reactionTimer -= Time.deltaTime;
     }
 
     private void ProcessPendingTransitions()
     {
-        if (_pendingStates.Count > 0 && _reactionTimer <= 0)
+        if (_pendingState.HasValue && _reactionTimer <= 0)
         {
-            AIState nextState = _pendingStates.Dequeue();
+            AIState nextState = _pendingState.Value;
+            _pendingState = null;
+
+            if (_currentState != null && !_currentState.CanInterrupt(nextState)) return;
+
             ExecuteTransition(nextState);
-            if (_pendingStates.Count > 0)
-            {
-                ResetReactionTimer(_pendingStates.Peek());
-            }
         }
     }
 
@@ -214,35 +214,31 @@ public class BotBrain : MonoBehaviour, IBotContext
         // Đảm bảo trạng thái hiện tại đồng ý cho phép ngắt
         if (_currentState != null && !_currentState.CanInterrupt(nextState)) return;
 
-        // Cơ chế ghi đè khẩn cấp: nếu chuyển sang trạng thái phòng thủ khẩn cấp (Block/Retreat)
+        // Cơ chế ghi đè: nếu trạng thái mới là khẩn cấp hoặc chưa có trạng thái chờ nào, ghi nhận và Reset bộ đếm
         bool isEmergency = nextState == AIState.Block || nextState == AIState.Retreat;
-        if (isEmergency)
+        if (!_pendingState.HasValue)
         {
-            // Clear các trạng thái không phải khẩn cấp đang chờ trong queue
-            if (_pendingStates.Count > 0)
-            {
-                AIState currentPending = _pendingStates.Peek();
-                if (currentPending != AIState.Block && currentPending != AIState.Retreat)
-                {
-                    _pendingStates.Clear();
-                }
-            }
-        }
-
-        // Tránh xếp hàng trùng lặp liên tục cùng một trạng thái
-        if (_pendingStates.Contains(nextState)) return;
-
-        _pendingStates.Enqueue(nextState);
-
-        // Nếu đây là trạng thái đầu tiên hoặc vừa bị clear và làm mới, bắt đầu tính giờ phản xạ
-        if (_pendingStates.Count == 1)
-        {
+            _pendingState = nextState;
             ResetReactionTimer(nextState);
+        }
+        else
+        {
+            bool pendingIsEmergency = _pendingState.Value == AIState.Block || _pendingState.Value == AIState.Retreat;
+            if (isEmergency && !pendingIsEmergency)
+            {
+                _pendingState = nextState;
+                ResetReactionTimer(nextState);
+            }
         }
     }
 
     private void ResetReactionTimer(AIState state)
     {
+        if (_config == null)
+        {
+            _reactionTimer = 0.4f * (state == AIState.Block || state == AIState.Retreat ? 0.25f : 1f);
+            return;
+        }
         _reactionTimer = _config.Timing.reactionDelay * (state == AIState.Block || state == AIState.Retreat ? 0.25f : 1f);
     }
 
@@ -294,7 +290,7 @@ public class BotBrain : MonoBehaviour, IBotContext
             _decisionPolicy = new WeightedRandomPolicy();
         }
 
-        _pendingStates.Clear();
+        _pendingState = null;
     }
 
 #if UNITY_EDITOR

@@ -7,6 +7,7 @@ public class FlashSkill : Skill
     private Vector2 _dashVelocity;
     private float _dashTimer;
     private bool _isDashing;
+    private Collider2D _ignoredTargetCollider;
 
     private const float DASH_DURATION = 0.2f; // 1 giây lướt
 
@@ -82,14 +83,25 @@ public class FlashSkill : Skill
     {
         if (_collider == null) return;
 
-        // Lấy đối thủ trực tiếp qua bộ xoay (RotationHandler) thay vì quét toàn bộ Scene
-        var rotationHandler = Owner.GetComponent<RotationHandler>();
-        if (rotationHandler != null && rotationHandler.Target != null)
+        if (ignore)
         {
-            var otherCollider = rotationHandler.Target.GetComponentInChildren<Collider2D>();
-            if (otherCollider != null)
+            // Lấy đối thủ trực tiếp qua bộ xoay (RotationHandler) thay vì quét toàn bộ Scene
+            var rotationHandler = Owner.GetComponent<RotationHandler>();
+            if (rotationHandler != null && rotationHandler.Target != null)
             {
-                Physics2D.IgnoreCollision(_collider, otherCollider, ignore);
+                _ignoredTargetCollider = rotationHandler.Target.GetComponentInChildren<Collider2D>();
+                if (_ignoredTargetCollider != null)
+                {
+                    Physics2D.IgnoreCollision(_collider, _ignoredTargetCollider, true);
+                }
+            }
+        }
+        else
+        {
+            if (_ignoredTargetCollider != null)
+            {
+                Physics2D.IgnoreCollision(_collider, _ignoredTargetCollider, false);
+                _ignoredTargetCollider = null;
             }
         }
     }
