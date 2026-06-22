@@ -7,12 +7,17 @@ public abstract class Skill
     public float CooldownTimer { get; protected set; }
     public bool IsExecuting { get; protected set; } // Trạng thái đang thi triển chiêu
 
+    protected IManaChecker _manaChecker;
+    protected IManaConsumer _manaConsumer;
+
     public virtual void Init(GameObject owner, BaseSkill config)
     {
         Owner = owner;
         Config = config;
         CooldownTimer = 0f;
         IsExecuting = false;
+        _manaChecker = owner.GetComponent<IManaChecker>();
+        _manaConsumer = owner.GetComponent<IManaConsumer>();
     }
 
     public virtual void UpdateCooldown(float deltaTime)
@@ -21,14 +26,14 @@ public abstract class Skill
             CooldownTimer -= deltaTime;
     }
 
-    public virtual bool CanCast(SkillController controller)
+    public virtual bool CanCast()
     {
-        return CooldownTimer <= 0f && controller.HasEnoughMana(Config.manaCost);
+        return CooldownTimer <= 0f && (_manaChecker == null || _manaChecker.HasManaReached(Config.manaCost));
     }
 
-    public virtual void Cast(SkillController controller)
+    public virtual void Cast()
     {
-        controller.ConsumeMana(Config.manaCost);
+        _manaConsumer?.ConsumeMana(Config.manaCost);
         CooldownTimer = Config.cooldown;
         IsExecuting = true;
         TriggerAnimation(true);

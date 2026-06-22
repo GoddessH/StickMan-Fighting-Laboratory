@@ -11,6 +11,8 @@ public class BlockController : MonoBehaviour, IProvider<Func<bool>>
 
     private IStateRequestReceiver _requestReceiver;
     private EventInput _blockInput;
+    private IManaChecker _manaChecker;
+    private SkillController _skillController;
 
     #region Supporter
     private StateRequester _blockRequester;
@@ -22,8 +24,9 @@ public class BlockController : MonoBehaviour, IProvider<Func<bool>>
     {
         _requestReceiver = GetComponent<IStateRequestReceiver>();
         _blockRequester = new StateRequester(StateType.Block);
-
         _blockInput = GetComponent<CharacterInput>().BlockInput;
+        _manaChecker = GetComponent<IManaChecker>();
+        _skillController = GetComponent<SkillController>();
     }
 
     private void OnEnable()
@@ -34,10 +37,14 @@ public class BlockController : MonoBehaviour, IProvider<Func<bool>>
 
     private void RequestBlock()
     {
-        var skillController = GetComponent<SkillController>();
-        if (skillController != null && !skillController.CanCast(SkillType.Block))
+        if (_skillController != null && _manaChecker != null)
         {
-            return;
+            var config = _skillController.GetSkillConfig(SkillType.Block);
+            if (config != null)
+            {
+                if (!_manaChecker.HasManaReached(config.manaCost)) return;
+                if (_skillController.IsOnCooldown(SkillType.Block)) return;
+            }
         }
         _blockRequester?.RequestState(_requestReceiver);
     }
