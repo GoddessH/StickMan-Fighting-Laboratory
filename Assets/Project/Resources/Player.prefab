@@ -146,7 +146,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0f5aa6ceb90b8244bfee5f3084e4d66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ownerPhotonView: {fileID: 1500862005136320596}
   _indicatorCanvas: {fileID: 5116007223616388279}
   _indicatorImage: {fileID: 8005091192790575558}
   _indicatorSprites:
@@ -637,7 +636,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 4723107735738678597, guid: 0e3502a80399d164ea01f1868f65acbf, type: 3}
+  m_Sprite: {fileID: 4723107735738678597, guid: 6fc66c021eec74942b4e71a3fde4dc04, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -658,7 +657,7 @@ Animator:
   m_GameObject: {fileID: 4630287000361419720}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 87927a630b81cdf49a62b7c7a97ea192, type: 2}
+  m_Controller: {fileID: 9100000, guid: eaa25fd175679cf4ca8a922d0056aa89, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
