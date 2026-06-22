@@ -6,11 +6,13 @@ public class FlashController : MonoBehaviour, IProvider<Func<bool>>
 {
     private SkillController _skillController;
     private EventInput _flashInput;
+    private IManaChecker _manaChecker;
 
     private void Awake()
     {
         _skillController = GetComponent<SkillController>();
         _flashInput = GetComponent<CharacterInput>().FlashInput;
+        _manaChecker = GetComponent<IManaChecker>();
     }
 
     private void OnEnable()
@@ -31,8 +33,14 @@ public class FlashController : MonoBehaviour, IProvider<Func<bool>>
 
     private void RequestFlash()
     {
-        if (_skillController != null && _skillController.CanCast(SkillType.Flash))
+        if (_skillController != null && _manaChecker != null)
         {
+            var config = _skillController.GetSkillConfig(SkillType.Flash);
+            if (config != null)
+            {
+                if (!_manaChecker.HasManaReached(config.manaCost)) return;
+                if (_skillController.IsOnCooldown(SkillType.Flash)) return;
+            }
             _skillController.StartSkill(SkillType.Flash);
         }
     }

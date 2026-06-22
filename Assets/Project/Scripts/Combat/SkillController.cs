@@ -7,24 +7,13 @@ public class SkillController : MonoBehaviour
     [Header("Skills Configuration")]
     [SerializeField] private List<BaseSkill> _skills = new List<BaseSkill>();
 
-    private IManaConsumer _manaConsumer;
-    private IManaChecker _manaChecker;
-    private CharacterInput _characterInput;
-
     private Dictionary<SkillType, Skill> _activeSkills = new Dictionary<SkillType, Skill>();
     private List<SkillType> _configuredSkillTypes = new List<SkillType>();
 
-    private HashSet<SkillType> _activeContinuousSkills = new HashSet<SkillType>();
-    private Dictionary<SkillType, float> _continuousAccumulators = new Dictionary<SkillType, float>();
-
-    public void Init(IManaConsumer manaConsumer, IManaChecker manaChecker)
+    public void Init()
     {
-        _manaConsumer = manaConsumer;
-        _manaChecker = manaChecker;
-        
         _activeSkills.Clear();
         _configuredSkillTypes.Clear();
-        _continuousAccumulators.Clear();
 
         for (int i = 0; i < _skills.Count; i++)
         {
@@ -36,7 +25,6 @@ public class SkillController : MonoBehaviour
             skillInstance.Init(gameObject, config);
 
             _activeSkills[type] = skillInstance;
-            _continuousAccumulators[type] = 0f;
 
             if (!_configuredSkillTypes.Contains(type))
             {
@@ -50,94 +38,21 @@ public class SkillController : MonoBehaviour
         return config.CreateInstance();
     }
 
+    private void Awake()
+    {
+        if (GetComponent<SkillCastingSupporter>() == null)
+        {
+            gameObject.AddComponent<SkillCastingSupporter>();
+        }
+    }
+
     private void Start()
     {
-        _characterInput = GetComponent<CharacterInput>();
-        IManaConsumer mana = GetComponent<IManaConsumer>();
-        IManaChecker manaChecker = GetComponent<IManaChecker>();
-        if (mana != null || manaChecker != null)
-        {
-            Init(mana, manaChecker);
-        }
-    }
-
-    private void OnEnable()
-    {
-        SubscribeInputs();
-    }
-
-    private void OnDisable()
-    {
-        UnsubscribeInputs();
-    }
-
-    private void SubscribeInputs()
-    {
-        if (_characterInput == null) _characterInput = GetComponent<CharacterInput>();
-        if (_characterInput != null)
-        {
-            var inputs = _characterInput.SkillInputs;
-            if (inputs != null)
-            {
-                for (int i = 0; i < inputs.Count; i++)
-                {
-                    int index = i;
-                    SkillType type = (SkillType)((int)SkillType.Skill1 + index);
-                    inputs[index]?.SubscribeInputAction(() => RequestSkill(type));
-                }
-            }
-        }
-    }
-
-    private void UnsubscribeInputs()
-    {
-        if (_characterInput != null)
-        {
-            var inputs = _characterInput.SkillInputs;
-            if (inputs != null)
-            {
-                for (int i = 0; i < inputs.Count; i++)
-                {
-                    inputs[i]?.UnsubscribeInputAction();
-                }
-            }
-        }
-    }
-
-    private void RequestSkill(SkillType type)
-    {
-        if (CanCast(type))
-        {
-            StartSkill(type);
-        }
-    }
-
-    private EventInput GetInputForSlot(SkillType type)
-    {
-        if (_characterInput == null) return null;
-        switch (type)
-        {
-            case SkillType.Block:
-                return _characterInput.BlockInput;
-            case SkillType.Flash:
-                return _characterInput.FlashInput;
-            default:
-                if (type >= SkillType.Skill1 && type <= SkillType.Skill4)
-                {
-                    int index = type - SkillType.Skill1;
-                    var inputs = _characterInput.SkillInputs;
-                    if (inputs != null && index >= 0 && index < inputs.Count)
-                    {
-                        return inputs[index];
-                    }
-                }
-                return null;
-        }
+        Init();
     }
 
     private void Update()
     {
-        // 1. Cập nhật cooldowns và tự động tick active skills không GC Alloc
         for (int i = 0; i < _configuredSkillTypes.Count; i++)
         {
             SkillType key = _configuredSkillTypes[i];
@@ -148,44 +63,9 @@ public class SkillController : MonoBehaviour
                 if (skill.IsExecuting)
                 {
                     skill.OnUpdate(Time.deltaTime);
-
-                    if (skill.Config.isContinuous)
-                    {
-                        bool isHeld = false;
-                        var input = GetInputForSlot(key);
-                        if (input != null && input.Provide() != null)
-                        {
-                            isHeld = input.Provide().Invoke();
-                        }
-
-                        if (!isHeld)
-                        {
-                            StopSkill(key);
-                        }
-                        else
-                        {
-                            _activeContinuousSkills.Add(key);
-                            if (!ConsumeContinuousMana(key, Time.deltaTime))
-                            {
-                                StopSkill(key);
-                            }
-                        }
-                    }
                 }
             }
         }
-
-        // 2. Reset bộ tích lũy duy trì không GC Alloc
-        for (int i = 0; i < _configuredSkillTypes.Count; i++)
-        {
-            SkillType key = _configuredSkillTypes[i];
-            if (!_activeContinuousSkills.Contains(key))
-            {
-                _continuousAccumulators[key] = 0f;
-            }
-        }
-
-        _activeContinuousSkills.Clear();
     }
 
     public BaseSkill GetSkillConfig(SkillType type)
@@ -195,14 +75,9 @@ public class SkillController : MonoBehaviour
         return null;
     }
 
-    public bool HasEnoughMana(float amount)
+    public bool TryGetSkill(SkillType type, out Skill skill)
     {
-        return _manaChecker != null && _manaChecker.HasManaReached(amount);
-    }
-
-    public void ConsumeMana(float amount)
-    {
-        _manaConsumer?.ConsumeMana(amount);
+        return _activeSkills.TryGetValue(type, out skill);
     }
 
     public bool IsOnCooldown(SkillType type)
@@ -218,7 +93,7 @@ public class SkillController : MonoBehaviour
     {
         if (_activeSkills.TryGetValue(type, out var skill))
         {
-            return skill.CanCast(this);
+            return skill.CanCast();
         }
         return false;
     }
@@ -236,14 +111,9 @@ public class SkillController : MonoBehaviour
     {
         if (_activeSkills.TryGetValue(type, out var skill))
         {
-            if (skill.CanCast(this))
+            if (skill.CanCast())
             {
-                skill.Cast(this);
-                if (skill.Config.isContinuous)
-                {
-                    _continuousAccumulators[type] = 0f;
-                    _activeContinuousSkills.Add(type);
-                }
+                skill.Cast();
                 return true;
             }
         }
@@ -255,31 +125,6 @@ public class SkillController : MonoBehaviour
         if (_activeSkills.TryGetValue(type, out var skill))
         {
             skill.OnEnd();
-            _activeContinuousSkills.Remove(type);
-            _continuousAccumulators[type] = 0f;
         }
-    }
-
-    private bool ConsumeContinuousMana(SkillType type, float deltaTime)
-    {
-        BaseSkill config = GetSkillConfig(type);
-        if (config == null || !config.isContinuous)
-            return false;
-
-        _continuousAccumulators[type] += deltaTime;
-
-        if (_continuousAccumulators[type] >= 1.0f)
-        {
-            if (HasEnoughMana(config.manaCost))
-            {
-                ConsumeMana(config.manaCost);
-                _continuousAccumulators[type] -= 1.0f;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        return true;
     }
 }
