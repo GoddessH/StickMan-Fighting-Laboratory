@@ -28,7 +28,7 @@ public class TargetGroupData
     {
         OwnerWeight = .8f;
         EnemyWeight = .6f;
-        Radius = .5f;
+        Radius = 4f;
         OrthorSizeRange = new Interval(5, 7);
     }
 
