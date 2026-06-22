@@ -69,7 +69,6 @@ GameObject:
   - component: {fileID: 6400232723484473053}
   - component: {fileID: 7663217877822516840}
   - component: {fileID: 4403919109239406072}
-  - component: {fileID: 7961859492729371983}
   - component: {fileID: 869861843455396347}
   - component: {fileID: 7795983618706610845}
   - component: {fileID: 678858133278722643}
@@ -81,6 +80,7 @@ GameObject:
   - component: {fileID: -1004991160202928337}
   - component: {fileID: 5397669770830909824}
   - component: {fileID: -8068301173134516344}
+  - component: {fileID: 6561806537250223936}
   m_Layer: 0
   m_Name: Bot
   m_TagString: Untagged
@@ -363,21 +363,6 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 64
     _fallThreshold: 1.8
---- !u!114 &7961859492729371983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3344395903890743326}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c308c1015c3b464eb3e0d7fd3d886f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _attackHitBox: {fileID: 2445361417006248168}
-  _attackEventReceiver: {fileID: 1458336223002671743}
-  _attackDamages: 2
 --- !u!114 &869861843455396347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -526,6 +511,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a70581a21fb2de4082984053a6cd41a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6561806537250223936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3344395903890743326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01f8062dffe03fe47b2af6f3819a4337, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attackDamages: 10
+  _attackHitBox: {fileID: 2445361417006248168}
+  _attackEventReceiver: {fileID: 1458336223002671743}
 --- !u!1 &5025883456512114503
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,7 +570,7 @@ GameObject:
   - component: {fileID: 1785599544534401346}
   m_Layer: 7
   m_Name: DamageablePoint
-  m_TagString: Untagged
+  m_TagString: HitBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

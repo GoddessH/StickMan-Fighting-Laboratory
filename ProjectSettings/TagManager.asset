@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - PlayerHitBox
   - Bullet
+  - HitBox
   layers:
   - Default
   - TransparentFX

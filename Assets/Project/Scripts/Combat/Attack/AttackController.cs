@@ -2,51 +2,36 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterInput))]
-public class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDealerEvent
+public abstract class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDealerEvent
 {
     //
-    [SerializeField] private AttackHitBox _attackHitBox;
-    [SerializeField] private AnimationEventReceiver _attackEventReceiver;
-    [SerializeField] private float _attackDamages;
+    [SerializeField] protected float _attackDamages;
 
-    private IStateRequestReceiver _requestReceiver;
-    private EventInput _attackInput;
+    protected IStateRequestReceiver _requestReceiver;
+    protected EventInput _attackInput;
 
-    private Action _onHit;
+    protected Action _onHit;
 
     #region Supporter
-    private StateRequester _attackRequester;
+    protected StateRequester _attackRequester;
     #endregion
 
-    private void Awake()
+    protected virtual void Awake()
     {
         _requestReceiver = GetComponent<IStateRequestReceiver>();
         _attackRequester = new StateRequester(StateType.Attack);
 
         _attackInput = GetComponent<CharacterInput>().AttackInput;
-
-        _attackEventReceiver?.Init(DoDamages);
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
         => _attackInput.SubscribeInputAction(Attack);
 
-    private void OnDisable() 
+    protected virtual void OnDisable()
         => _attackInput.UnsubscribeInputAction();
 
-    private void Attack() 
+    protected virtual void Attack()
         => _attackRequester?.RequestState(_requestReceiver);
-
-    #region Call in animation's event
-    private void DoDamages()
-    {
-        HurtPoint hurtPoint = _attackHitBox?.DetectTarget();
-
-        if (hurtPoint == null) return;
-        hurtPoint.TakeDamages(_attackDamages);
-        _onHit?.Invoke();
-    }
-    #endregion
 
     #region Implement IProvider
     /// <summary>
@@ -66,4 +51,5 @@ public class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDea
         _onHit -= subscriber;
     }
     #endregion
+
 }
