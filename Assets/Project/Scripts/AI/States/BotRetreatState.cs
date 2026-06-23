@@ -24,7 +24,15 @@ public class BotRetreatState : BotState
     public override void Update()
     {
         _retreatTimer -= Time.deltaTime;
+        
+        // Thiết lập hướng di chuyển lùi ra xa đối thủ trước
         context.Executor.SetMovement(new Vector2(-context.Sensor.DirectionToTarget.x, 0f));
+
+        // Tự động kích hoạt Flash để lướt lùi né đòn (Dodge) nhanh chóng nếu có thể
+        if (context.SkillController != null && context.SkillController.CanCast(SkillType.Flash))
+        {
+            context.Executor.TriggerFlash();
+        }
 
         if (_retreatTimer <= 0)
         {
