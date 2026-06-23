@@ -47,15 +47,6 @@ public class BotApproachState : BotState
             dynamicFlyThreshold = context.Config.Movement.flyThreshold * (1f - airborneScore * 0.5f);
         }
 
-        // 2. Tự động dùng Flash để áp sát khi ở khoảng cách xa phương ngang và độ cao tương đối gần (nới lỏng sai lệch dọc)
-        if (context.SkillController != null && context.SkillController.CanCast(SkillType.Flash))
-        {
-            if (diffX > context.Config.Detection.threatRange && diffX <= 6f && diffY <= 1.2f)
-            {
-                context.Executor.TriggerFlash();
-            }
-        }
-
         // Tính vector di chuyển: x theo hướng target, y theo độ cao tương đối
         float xMove = context.Sensor.DirectionToTarget.x;
         float yMove = 0f;
@@ -77,7 +68,17 @@ public class BotApproachState : BotState
             yMove = -1f;
         }
 
+        // Cập nhật hướng di chuyển trước
         context.Executor.SetMovement(new Vector2(xMove, yMove));
+
+        // 2. Tự động dùng Flash để áp sát khi ở khoảng cách xa phương ngang và độ cao tương đối gần (nới lỏng sai lệch dọc)
+        if (context.SkillController != null && context.SkillController.CanCast(SkillType.Flash))
+        {
+            if (diffX > context.Config.Detection.threatRange && diffX <= 6f && diffY <= 1.2f)
+            {
+                context.Executor.TriggerFlash();
+            }
+        }
 
         // Cần đảm bảo mục tiêu nằm trong tầm đánh cả chiều ngang và chiều dọc (nới lỏng sai lệch dọc để dễ ra đòn)
         float verticalAttackTolerance = Mathf.Max(dynamicFlyThreshold, 1.0f);
