@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class RotationHandler : MonoBehaviour, IComponentDeactiveOnDeath
+public abstract class RotationHandler : MonoBehaviour, IComponentDeactivator
 {
     // 
     protected Transform _target;
@@ -22,7 +22,7 @@ public abstract class RotationHandler : MonoBehaviour, IComponentDeactiveOnDeath
     public void SetTarget(Transform target) => _target = target;
 
     #region Explicit implement IComponentDeactiveOnDeath
-    void IComponentDeactiveOnDeath.Active() => enabled = true;
-    void IComponentDeactiveOnDeath.Deactive() => enabled = false;
+    void IComponentDeactivator.Active() => enabled = true;
+    void IComponentDeactivator.Deactive() => enabled = false;
     #endregion
 }

@@ -9,15 +9,15 @@ public class Projectile : Product
     [SerializeField] private float _speed;
 
     private RotationHandlerOneTime _rotationHandler;
-    private ProductContext _productContext;
+    private ProjectileContext _context;
     private Coroutine _coroutine;
     private WaitForSeconds _waitForSeconds;
 
     private void Update()
     {
-        if (_productContext == null) return;
+        if (_context == null) return;
 
-        transform.position += (Vector3)_productContext.Direction * _speed * Time.deltaTime;
+        transform.position += (Vector3)_context.Direction * _speed * Time.deltaTime;
     }
 
     private void OnEnable()
@@ -35,10 +35,13 @@ public class Projectile : Product
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        _onReleaseSelf?.Invoke(_poolID, _productID);
+
         if (!collision.collider.CompareTag(TagNames.HitBoxTag)) return;
 
-        _productContext?.OnDoDamages.Invoke(collision.collider.GetComponent<HurtPoint>());
-        _onReleaseSelf?.Invoke(_poolID, _productID);
+
+        _context?.OnDoDamages.Invoke(collision.collider.GetComponent<HurtPoint>());
+        Debug.Log("Called");
     }
 
     private IEnumerator LifeRoutine()
@@ -48,13 +51,13 @@ public class Projectile : Product
         _onReleaseSelf?.Invoke(_poolID, _productID);
     }
 
-    #region Implement Product
-    public override void SetContext<ProductContext>(ProductContext context)
+    public void SetContext(ProjectileContext context)
     {
-        _productContext = context;
+        _context = context;
+
+        transform.position = _context.SpawnPosition;
 
         if (_rotationHandler == null) _rotationHandler = GetComponent<RotationHandlerOneTime>();
-        _rotationHandler.Rotate(_productContext.Direction);
+        _rotationHandler.Rotate(_context.Direction);
     }
-    #endregion
 }

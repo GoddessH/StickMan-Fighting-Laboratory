@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IComponentDeactiveOnDeath
+public interface IComponentDeactivator
 {
     //
     public void Active();

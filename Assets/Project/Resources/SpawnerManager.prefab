@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5405279428295456472}
   - component: {fileID: 941202427768790479}
   - component: {fileID: 4683741113269564235}
+  - component: {fileID: 8995966001703422911}
   m_Layer: 0
   m_Name: SpawnerManager
   m_TagString: Untagged
@@ -94,3 +95,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _chargeAura: {fileID: 3081362037621676516, guid: 0e1cda1849280884a99fa85ea45ffbbc, type: 3}
+--- !u!114 &8995966001703422911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 817489178279698515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6fde989ca3b185439a9ecbe18968e11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entryList:
+  - _productPrefab: {fileID: 6864308075036322512, guid: 5b81650284f632c4e8af6086f28680ae, type: 3}
+    _productHolder: {fileID: 0}

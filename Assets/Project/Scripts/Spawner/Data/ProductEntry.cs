@@ -2,12 +2,12 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public struct ProductEntry
+public struct ProductEntry<T> where T : Product
 {
     //
-    [SerializeField] private Product _productPrefab;
+    [SerializeField] private T _productPrefab;
     [SerializeField] private Transform _productHolder;
 
-    public Product Prefab => _productPrefab;
+    public T Prefab => _productPrefab;
     public Transform Holder => _productHolder;
 }

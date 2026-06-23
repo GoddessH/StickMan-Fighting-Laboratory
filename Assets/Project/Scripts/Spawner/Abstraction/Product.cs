@@ -11,8 +11,6 @@ public abstract class Product : MonoBehaviour
     public int PoolID => _poolID;
     public int ProductID => _productID;
 
-    public abstract void SetContext<T>(T context) where T : ProductContext;
-
     public virtual void Init(int poolID, int productID, Action<int, int> onRequestRelease)
     {
         _poolID = poolID;
