@@ -17,7 +17,7 @@ public struct Interval
         _max = max;
     }
 
-    public float GetLength() => Mathf.Abs(_max - _min);
-
     public Vector2 ConvertToVector2() => new Vector2(_min, _max);
+    public bool IsInRange(float value) => value >= _min && value <= _max;
+    public float GetLength() => Mathf.Abs(_max - _min);
 }

@@ -1,15 +1,15 @@
+using Spine;
 using System;
 using UnityEngine;
 
 public class AttackState : State
 {
     //
-    private readonly Vector2 _comboWindow = new Vector2(.45f, /*.7f*/1);
-    //private const float _comboWindow = .5f;
+    private readonly Interval _comboWindow = new Interval(.45f, /*.7f*/1);
 
+    private TrackEntry _currentTrack;
     private Func<bool> _onCheckInput;
 
-    private bool _isCorrectAnimation;
     private int _comboCount;
 
     #region Implement State
@@ -25,26 +25,24 @@ public class AttackState : State
             return;
         }
 
-        _stateData.AnimationHandler.SetBool(AnimationName.Attack, true);
-        _isCorrectAnimation = false;
-        _stateData.AnimationHandler.SetInteger(AnimationName.AttackCombo, _comboCount = 1);
+        _comboCount = 0;
+        _currentTrack = _animationHandler.SetAnimation(_animationHandler.Library.AttackCombo[_comboCount], false);
     }
     public override void UpdateState()
     {
-        (bool flag, float time) tick = _stateData.AnimationHandler.CheckCurrentState("Attack1");
-
-        if (!_isCorrectAnimation)
+        if (_currentTrack == null || _currentTrack.IsComplete)
         {
-            if (tick.flag) _isCorrectAnimation = true;
+            _onComplete?.Invoke(_type);
+            return;
         }
-        else if (tick.time >= 1) _onComplete?.Invoke(_type);
 
-        if (_isCorrectAnimation && _onCheckInput.Invoke() && _comboCount < 4 && tick.time >= _comboWindow.x && tick.time <= _comboWindow.y)
-            _stateData.AnimationHandler.SetInteger(AnimationName.AttackCombo, ++_comboCount);
+        float currentPercent = _currentTrack.AnimationTime / _currentTrack.Animation.Duration;
+        if (_comboWindow.IsInRange(currentPercent) && _onCheckInput != null && _onCheckInput.Invoke()) 
+            _currentTrack = _animationHandler.SetAnimation(_animationHandler.Library.AttackCombo[++_comboCount], false);
+
     }
     public override void ExitState()
     {
-        _stateData.AnimationHandler.SetBool(AnimationName.Attack, false);
     }
     #endregion
 }

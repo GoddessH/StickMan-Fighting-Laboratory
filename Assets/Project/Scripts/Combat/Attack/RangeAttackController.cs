@@ -30,7 +30,7 @@ public class RangeAttackController : AttackController
     protected override void Awake()
     {
         base.Awake();
-        _animationEventReceiver.Init(ShootProjectile);
+        //_animationEventReceiver.Init(ShootProjectile);
         _projectileContext.OnDoDamages = DoDamages;
     }
     #endregion

@@ -1,42 +1,69 @@
+using Spine;
+using Spine.Unity;
 using System;
+using UnityEngine;
 
 public class MoveState : State
 {
     //
-    private Func<bool> _onMove;
-    private Action _onResetState;
+    private CharacterVisualRoot _visualRoot;
+    private TrackEntry _currentTrack;
+    private IMover _mover;
+    private Func<Vector2> _onGetInput;
+
+    private void SetAnimation()
+    {
+        if (_visualRoot == null || _onGetInput == null) return;
+
+        AnimationReferenceAsset animation = _animationHandler.Library.MoveToggle.PrimaryAnimation;
+
+
+        float weight = Vector2.Dot(_onGetInput.Invoke(), _visualRoot.FacingDirection.normalized);
+
+        if (weight < 0) animation = _animationHandler.Library.MoveToggle.SecondaryAnimation;
+
+        _animationHandler.SetAnimation(animation, true);
+
+        //Debug.Log($"Direction: {_visualRoot.FacingDirection.normalized} ----- Weight: {weight}");
+    }
 
     #region Implement State
     protected override void SetContext()
     {
+        _mover = _ownerGO.GetComponent<IMover>();
+        _visualRoot = _ownerGO.GetComponent<Character>()?.VisualRoot;
         MovementController movementController = _ownerGO.GetComponent<MovementController>();
         if (movementController == null) return;
 
-        (Func<bool>, Action) context = movementController.Provide();
-        _onMove = context.Item1;
-        _onResetState = context.Item2;
+        _onGetInput = movementController.Provide();
     }
 
     public override void EnterState()
     {
-        if (_onMove == null || _onResetState == null)
+        if (_mover == null || _onGetInput == null)
         {
             _onComplete?.Invoke(_type);
             return;
         }
 
-        _stateData.AnimationHandler.SetBool(AnimationName.Run, true);
+        SetAnimation();
     }
 
     public override void UpdateState()
     {
-        if (!_onMove.Invoke()) _onComplete?.Invoke(_type);
+        if (_mover == null || _onGetInput == null || _onGetInput.Invoke() == Vector2.zero)
+        {
+            _onComplete?.Invoke(_type);
+            return;
+        }
+
+        _mover.Move();
+        SetAnimation();
     }
 
     public override void ExitState()
     {
-        _stateData.AnimationHandler.SetBool(AnimationName.Run, false);
-        _onResetState?.Invoke();
+        _mover?.StopMove();
     }
     #endregion
 }

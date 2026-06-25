@@ -3,9 +3,9 @@ using UnityEngine;
 public struct StateData
 {
     //
-    public AnimationHandler AnimationHandler { get; private set; }
+    public AnimationHandle AnimationHandler { get; private set; }
 
-    public StateData(AnimationHandler animationHandler)
+    public StateData(AnimationHandle animationHandler)
     {
         AnimationHandler = animationHandler;
     }

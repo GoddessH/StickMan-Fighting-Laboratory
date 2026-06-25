@@ -4,7 +4,7 @@ public class PlayerPatternTracker : MonoBehaviour
 {
     private Transform _target;
     private StateController _targetStateController;
-    private AnimationHandler _targetAnimationHandler;
+    private AnimationHandle _targetAnimationHandler;
     private BotDifficultyConfig _config;
 
     // Chỉ số EMA công khai
@@ -34,7 +34,7 @@ public class PlayerPatternTracker : MonoBehaviour
             if (target != null)
             {
                 _targetStateController = target.GetComponent<StateController>();
-                _targetAnimationHandler = target.GetComponentInChildren<AnimationHandler>();
+                _targetAnimationHandler = target.GetComponentInChildren<AnimationHandle>();
             }
             else
             {
@@ -61,7 +61,7 @@ public class PlayerPatternTracker : MonoBehaviour
         }
         if (_targetAnimationHandler == null)
         {
-            _targetAnimationHandler = _target.GetComponentInChildren<AnimationHandler>();
+            _targetAnimationHandler = _target.GetComponentInChildren<AnimationHandle>();
         }
 
         // Tính alpha dựa trên half-life (thời gian bán rã để quên lối chơi cũ)
@@ -91,8 +91,8 @@ public class PlayerPatternTracker : MonoBehaviour
         float isAirborne = 0f;
         if (_targetAnimationHandler != null)
         {
-            bool flying = _targetAnimationHandler.GetBool(AnimationName.Fly);
-            bool falling = _targetAnimationHandler.GetBool(AnimationName.Fall);
+            bool flying = _targetAnimationHandler.IsCurrentAnimationName(_targetAnimationHandler.Library.IdleToggle.SecondaryAnimation);
+            bool falling = _targetAnimationHandler.IsCurrentAnimationName(_targetAnimationHandler.Library.IdleToggle.PrimaryAnimation);
             if (flying || falling)
             {
                 isAirborne = 1f;

@@ -50,8 +50,10 @@ public class RotationHandlerFullCircle : RotationHandler
 
 #if UNITY_EDITOR
     #region DevLog
+    [SerializeField] private bool _showLog;
     private void OnDrawGizmos()
     {
+        if (!_showLog) return;
         Gizmos.color = Color.blue;
         Vector3 target = transform.position + Vector3.down * _balanceThreshold.Max;
         Gizmos.DrawRay(transform.position, target - transform.position);

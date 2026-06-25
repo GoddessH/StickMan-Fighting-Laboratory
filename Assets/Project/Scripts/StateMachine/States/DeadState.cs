@@ -5,7 +5,6 @@ public class DeadState : State
 {
     //
     private Action<bool> _onSetEnableHurtPoint;
-    private bool _isCorrectState;
 
     #region Implement State
     protected override void SetContext()
@@ -14,25 +13,17 @@ public class DeadState : State
     }
     public override void EnterState()
     {
-        _isCorrectState = false;
-
-        _stateData.AnimationHandler.SetBool(AnimationName.Die, true);
+        _animationHandler.SetAnimation(_animationHandler.Library.Dead, false);
         _onSetEnableHurtPoint?.Invoke(false);
     }
 
     public override void UpdateState()
     {
-        (bool flag, float time) tick = _stateData.AnimationHandler.CheckCurrentState("Die");
-
-        if (!_isCorrectState)
-        {
-            if (tick.flag) _isCorrectState = true;
-        }
+        
     }
 
     public override void ExitState()
     {
-        _stateData.AnimationHandler.SetBool(AnimationName.Die, false);
         _onSetEnableHurtPoint?.Invoke(true);
     }
     #endregion

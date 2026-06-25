@@ -1,12 +1,12 @@
+using Spine;
 using System;
 
 public class HurtState : State
 {
     //
+    private TrackEntry _currentTrack;
     private Func<float> _onGetLastDamages;
     private Action<float> _onReduceHealth;
-
-    private bool _isCorrectState;
 
     #region Implement State
     protected override void SetContext()
@@ -16,24 +16,26 @@ public class HurtState : State
     }
     public override void EnterState()
     {
-        _stateData.AnimationHandler.SetBool(AnimationName.Hurt, true);
-        _isCorrectState = false;
+        _currentTrack = _animationHandler.SetAnimation(_animationHandler.Library.HitCombo[0], false);
+        if (_currentTrack != null) _currentTrack.Complete += HurtState_Complete;
 
         if (_onGetLastDamages != null) 
             _onReduceHealth?.Invoke(_onGetLastDamages.Invoke());
     }
+
+    private void HurtState_Complete(TrackEntry trackEntry) => _onComplete?.Invoke(_type);
+
     public override void UpdateState()
     {
-        (bool flag, float time) tick = _stateData.AnimationHandler.CheckCurrentState("Hurt");
-        if (!_isCorrectState)
+        if (!_animationHandler.IsCurrentAnimationName(_animationHandler.Library.HitCombo[0]))
         {
-            if (tick.flag) _isCorrectState = true;
+            _onComplete?.Invoke(_type);
+            return;
         }
-        else if (tick.time >= 1) _onComplete?.Invoke(_type);
     }
     public override void ExitState()
     {
-        _stateData.AnimationHandler.SetBool(AnimationName.Hurt, false);
+        _currentTrack = null;
     }
     #endregion
 }

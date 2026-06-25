@@ -45,7 +45,7 @@ public class BlockState : State
         _manaCost = config != null ? config.manaCost : 10f;
 
         // Bật animation Block
-        _stateData.AnimationHandler.SetBool(AnimationName.Block, true);
+        //_stateData.AnimationHandler.SetBool(AnimationName.Block, true);
         _blockTimer = 5.0f;
         _manaTick = 0f;
     }
@@ -105,7 +105,7 @@ public class BlockState : State
     public override void ExitState()
     {
         // Tắt animation Block
-        _stateData.AnimationHandler.SetBool(AnimationName.Block, false);
+        //_stateData.AnimationHandler.SetBool(AnimationName.Block, false);
 
         // Dừng skill (sẽ tự động gọi OnEnd và giải phóng BlockController)
         _skillController?.StopSkill(SkillType.Block);

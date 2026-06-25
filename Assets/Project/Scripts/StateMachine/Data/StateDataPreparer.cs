@@ -10,7 +10,7 @@ public class StateDataPreparer : IProvider<StateData>
     #region Implement IProvider
     public StateData Provide()
     {
-        AnimationHandler animationHandler = ComponentEnsurer.EnsureComponent(_ownerGO.GetComponent<AnimationHandler>(), _ownerGO);
+        AnimationHandle animationHandler = ComponentEnsurer.EnsureComponent(_ownerGO.GetComponent<AnimationHandle>(), _ownerGO);
 
         StateData preparedContext = new StateData(animationHandler);
 

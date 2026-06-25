@@ -1,3 +1,4 @@
+using Spine;
 using System;
 using UnityEngine;
 
@@ -5,7 +6,7 @@ public abstract class State
 {
     //
     protected GameObject _ownerGO;
-    protected StateData _stateData;
+    protected AnimationHandle _animationHandler;
     protected StateType _type;
     protected Action<StateType> _onComplete;
 
@@ -15,7 +16,7 @@ public abstract class State
     {
         _ownerGO = initialData.OwnerGO;
         _type = initialData.Type;
-        _stateData = initialData.StateData;
+        _animationHandler = initialData.StateData.AnimationHandler;
         _onComplete = initialData.OnComplete;
 
         Priority = initialData.Priority;

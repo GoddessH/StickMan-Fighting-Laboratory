@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CharacterInput))]
-public class MovementController : MonoBehaviour, IProvider<(Func<bool>, Action)>
+public class MovementController : MonoBehaviour, IMover, IProvider<Func<Vector2>>
 {
     //
     [SerializeField] private float _movementSpeed;
@@ -13,8 +13,6 @@ public class MovementController : MonoBehaviour, IProvider<(Func<bool>, Action)>
     private Vector2 _rawInput;
 
     #region Supporter
-    [SerializeField] private FallHandler _fallHandler = new FallHandler();
-    private FlyHandler _flyHandler = new FlyHandler();
     private StateRequester _moveRequester;
     #endregion
 
@@ -25,11 +23,6 @@ public class MovementController : MonoBehaviour, IProvider<(Func<bool>, Action)>
 
         _rigidBody = GetComponent<Rigidbody2D>();
         _movementInput = GetComponent<CharacterInput>().MovementInput;
-
-        AnimationHandler animationHandler = ComponentEnsurer.EnsureComponent(GetComponent<AnimationHandler>(), gameObject);
-        _flyHandler.Init(animationHandler);
-        _fallHandler.Init(transform, animationHandler);
-
     }
 
     private void Update()
@@ -38,52 +31,14 @@ public class MovementController : MonoBehaviour, IProvider<(Func<bool>, Action)>
 
         _rawInput = _movementInput.ProvideMovementInput();
         if (_rawInput != Vector2.zero) _moveRequester?.RequestState(_requestReceiver);
-
-        _fallHandler.Execute();
-        _flyHandler.Execute(_rawInput.y);
     }
 
-    private bool Move()
-    {
-        // Nếu đang lướt (Flash), không cho phép di chuyển bằng input đè lên
-        var skillController = GetComponent<SkillController>();
-        if (skillController != null && skillController.IsSkillExecuting(SkillType.Flash))
-        {
-            return false;
-        }
-
-        if (_rawInput == Vector2.zero)
-        {
-            _rigidBody.linearVelocity = Vector2.zero;
-            return false;
-        }
-
-        _rigidBody.linearVelocity = _rawInput.normalized * _movementSpeed;
-
-        return true;
-    }
-
-    private void ResetMovementSpeed()
-        => _rigidBody.linearVelocity = Vector2.zero;
-
-
-    #region Implement IProvider
-    /// <summary>
-    /// Provide MoveState
-    /// </summary>
-    /// <returns></returns>
-    public (Func<bool>, Action) Provide()
-        => (Move, ResetMovementSpeed);
+    #region Explicit implement IMover
+    void IMover.Move() => _rigidBody.linearVelocity = _rawInput.normalized * _movementSpeed;
+    void IMover.StopMove() => _rigidBody.linearVelocity = Vector2.zero;
     #endregion
 
-#if UNITY_EDITOR
-    #region DevLog
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Vector3 target = transform.position + Vector3.down * _fallHandler.FallThreshold;
-        Gizmos.DrawRay(transform.position, target - transform.position);
-    }
+    #region Implicit implement IProvider
+    public Func<Vector2> Provide() => () => _rawInput;
     #endregion
-#endif
 }
