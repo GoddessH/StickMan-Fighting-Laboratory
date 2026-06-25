@@ -309,7 +309,7 @@ GameObject:
   - component: {fileID: 6022055671278894324}
   - component: {fileID: 2936493113668399511}
   - component: {fileID: -1204517828314966158}
-  - component: {fileID: 3716997846753568432}
+  - component: {fileID: 3398392368655915660}
   - component: {fileID: 992425235403631967}
   m_Layer: 0
   m_Name: Player
@@ -662,7 +662,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a70581a21fb2de4082984053a6cd41a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3716997846753568432
+--- !u!114 &3398392368655915660
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -671,12 +671,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1338028093530308318}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f176b5598258b364c9eb6a31ff86d0e3, type: 3}
+  m_Script: {fileID: 11500000, guid: 01f8062dffe03fe47b2af6f3819a4337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _attackDamages: 10
-  _shootPivot: {fileID: 3020250431896813276}
-  _animationEventReceiver: {fileID: 0}
+  _attackHitBox: {fileID: 3699358350858971060}
 --- !u!114 &992425235403631967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -709,7 +708,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3020250431896813276
 Transform:
   m_ObjectHideFlags: 0
@@ -741,7 +740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5030126988977378083
 Transform:
   m_ObjectHideFlags: 0
@@ -751,7 +750,7 @@ Transform:
   m_GameObject: {fileID: 4071623425003871092}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.4, y: -0.1, z: 0}
+  m_LocalPosition: {x: 0.3, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -772,7 +771,7 @@ MonoBehaviour:
   _damageableMask:
     serializedVersion: 2
     m_Bits: 128
-  _attackRadius: 1.6
+  _attackRadius: 0.5
 --- !u!1 &4630287000361419720
 GameObject:
   m_ObjectHideFlags: 0

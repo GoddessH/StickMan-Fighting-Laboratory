@@ -21,7 +21,7 @@ public class BlockState : State
     {
         _blockController = _ownerGO.GetComponent<BlockController>();
         _onCheckBlockHolding = _blockController?.Provide();
-        _onCheckAttackInput = _ownerGO.GetComponent<MeleeAttackController>()?.Provide();
+        _onCheckAttackInput = _ownerGO.GetComponent<AttackControllerMelee>()?.Provide();
         _skillController = _ownerGO.GetComponent<SkillController>();
         _manaConsumer = _ownerGO.GetComponent<IManaConsumer>();
         _manaChecker = _ownerGO.GetComponent<IManaChecker>();

@@ -91,8 +91,8 @@ public class PlayerPatternTracker : MonoBehaviour
         float isAirborne = 0f;
         if (_targetAnimationHandler != null)
         {
-            bool flying = _targetAnimationHandler.IsCurrentAnimationName(_targetAnimationHandler.Library.IdleToggle.SecondaryAnimation);
-            bool falling = _targetAnimationHandler.IsCurrentAnimationName(_targetAnimationHandler.Library.IdleToggle.PrimaryAnimation);
+            bool flying = _targetAnimationHandler.IsCurrentAnimationName(_targetAnimationHandler.Library.IdleToggle.SecondaryAnimation.name);
+            bool falling = _targetAnimationHandler.IsCurrentAnimationName(_targetAnimationHandler.Library.IdleToggle.PrimaryAnimation.name);
             if (flying || falling)
             {
                 isAirborne = 1f;

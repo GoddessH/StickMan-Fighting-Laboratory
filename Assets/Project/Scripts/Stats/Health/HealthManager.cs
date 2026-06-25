@@ -40,11 +40,13 @@ public class HealthManager : MonoBehaviour, IProvider<Action<float>>
         if (CurrentHealth <= 0) return;
 
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
+        Debug.Log(CurrentHealth);
 
         if (_photonView == null) RPCOnChangeHeatlh(CurrentHealth, _maxHealth);
         else _photonView.RPC(nameof(RPCOnChangeHeatlh), RpcTarget.All, CurrentHealth, _maxHealth);
 
         if (CurrentHealth <= 0) _onLoseAllHealth?.Invoke();
+
     }
 
     [PunRPC]

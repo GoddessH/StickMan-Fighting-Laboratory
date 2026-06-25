@@ -37,7 +37,7 @@ public class StateController: MonoBehaviourPun, IStateRequestReceiver
     #region Explicit Implement IStateRequestReceiver
     void IStateRequestReceiver.ReceiveStateRequest(StateType type)
     {
-        if (photonView != null && !photonView.IsMine) return;
+        //if (photonView != null && !photonView.IsMine) return;
 
         //Debug.Log($"Phase1: Current: {_stateMachine.CurrentStateType} ---- Next: {type}");
 

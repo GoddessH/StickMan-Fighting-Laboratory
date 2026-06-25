@@ -9,12 +9,14 @@ public class AttackState : State
 
     private TrackEntry _currentTrack;
     private Func<bool> _onCheckInput;
+    private IAttacker _attacker;
 
     private int _comboCount;
 
     #region Implement State
     protected override void SetContext()
     {
+        _attacker = _ownerGO.GetComponent<IAttacker>();
         _onCheckInput = _ownerGO.GetComponent<AttackController>()?.Provide();
     }
     public override void EnterState()
@@ -28,6 +30,7 @@ public class AttackState : State
         _comboCount = 0;
         _animationHandler.SetAnimation(_animationHandler.Library.AttackCombo[_comboCount], false);
         _currentTrack = _animationHandler.GetCurrentTrack();
+        _attacker?.Attack();
     }
     public override void UpdateState()
     {
@@ -38,12 +41,13 @@ public class AttackState : State
         }
 
         float currentPercent = _currentTrack.AnimationTime / _currentTrack.Animation.Duration;
+
         if (_comboWindow.IsInRange(currentPercent) && _onCheckInput != null && _onCheckInput.Invoke())
         {
             _animationHandler.SetAnimation(_animationHandler.Library.AttackCombo[++_comboCount], false);
             _currentTrack = _animationHandler.GetCurrentTrack();
+            _attacker?.Attack();
         }
-
     }
     public override void ExitState()
     {

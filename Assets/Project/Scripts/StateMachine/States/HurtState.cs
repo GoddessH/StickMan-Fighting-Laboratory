@@ -1,5 +1,6 @@
 using Spine;
 using System;
+using UnityEngine;
 
 public class HurtState : State
 {
@@ -29,7 +30,7 @@ public class HurtState : State
 
     public override void UpdateState()
     {
-        if (!_animationHandler.IsCurrentAnimationName(_animationHandler.Library.HitCombo[0]))
+        if (_animationHandler == null || !_animationHandler.IsCurrentAnimationName(_currentTrack.Animation.Name))
         {
             _onComplete?.Invoke(_type);
             return;

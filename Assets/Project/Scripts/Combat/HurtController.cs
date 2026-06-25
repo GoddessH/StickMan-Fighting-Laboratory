@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using UnityEngine;
 
@@ -6,11 +7,10 @@ public class HurtController : MonoBehaviour, IProvider<Func<float>>, IDamageTake
     //
     [SerializeField] private HurtPoint _hurtPoint;
 
+    private PhotonView _photonView;
     private Action _onTakeDamage;
     private IStateRequestReceiver _requestReceiver;
     private float _cachedLastDamages;
-
-    private BlockController _blockController;
 
     #region Supporter
     private StateRequester _hurtRequester;
@@ -18,23 +18,22 @@ public class HurtController : MonoBehaviour, IProvider<Func<float>>, IDamageTake
 
     private void Awake()
     {
+        _photonView = GetComponent<PhotonView>();
         _requestReceiver = GetComponent<IStateRequestReceiver>();
         _hurtRequester = new StateRequester(StateType.Hurt);
         _hurtPoint?.Init(Hurt);
-        _blockController = GetComponent<BlockController>();
     }
+
+    [PunRPC]
+    private void RPCRequestHurt() => _hurtRequester?.RequestState(_requestReceiver);
 
     private void Hurt(float damages)
     {
-        if (_blockController != null && _blockController.IsBlocking)
-        {
-            _blockController.SpawnBlockFlashVFX();
-            return;
-        }
-
         _cachedLastDamages = damages;
-        _hurtRequester?.RequestState(_requestReceiver);
         _onTakeDamage?.Invoke();
+
+        if (_photonView == null) RPCRequestHurt();
+        else _photonView.RPC(nameof(RPCRequestHurt), RpcTarget.All);
     }
 
     #region Implement IProvider

@@ -25,11 +25,11 @@ public class AnimationHandle : MonoBehaviour
         SetAnimationLocal(animation.name, isLoop);
     }
 
-    public bool IsCurrentAnimationName(AnimationReferenceAsset animation)
+    public bool IsCurrentAnimationName(string name)
     {
-        if (_skeletonAnimation == null || animation == null) return false;
+        if (_skeletonAnimation == null) return false;
 
-        return _skeletonAnimation.AnimationName == animation.name;
+        return _skeletonAnimation.AnimationName == name;
     }
 
     public TrackEntry GetCurrentTrack() => _skeletonAnimation.AnimationState.GetCurrent(0);

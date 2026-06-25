@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterInput))]
-public abstract class AttackController : MonoBehaviour, IProvider<Func<bool>>, IDamageDealerEvent
+public abstract class AttackController : MonoBehaviour, IAttacker, IProvider<Func<bool>>, IDamageDealerEvent
 {
     //
     [SerializeField] protected float _attackDamages;
@@ -25,13 +25,15 @@ public abstract class AttackController : MonoBehaviour, IProvider<Func<bool>>, I
     }
 
     protected virtual void OnEnable()
-        => _attackInput.SubscribeInputAction(Attack);
+        => _attackInput.SubscribeInputAction(RequestAttack);
 
     protected virtual void OnDisable()
         => _attackInput.UnsubscribeInputAction();
 
-    protected virtual void Attack()
+    protected virtual void RequestAttack()
         => _attackRequester?.RequestState(_requestReceiver);
+
+    protected abstract void Attack();
 
     #region Implement IProvider
     /// <summary>
@@ -39,6 +41,10 @@ public abstract class AttackController : MonoBehaviour, IProvider<Func<bool>>, I
     /// </summary>
     public Func<bool> Provide()
         => _attackInput.Provide();
+    #endregion
+
+    #region Explicit implement IAttacker
+    void IAttacker.Attack() => Attack();
     #endregion
 
     #region Explicit implement IDamageDealerEvent
