@@ -1,5 +1,4 @@
 using UnityEngine;
-using Photon.Pun;
 
 public class AnimationHandler : MonoBehaviour
 {
