@@ -294,6 +294,8 @@ GameObject:
   - component: {fileID: 1500862005136320596}
   - component: {fileID: 243748646423560708}
   - component: {fileID: 4801698239473177247}
+  - component: {fileID: 5443270158730502435}
+  - component: {fileID: 1669293072939922053}
   - component: {fileID: 4395116401505181079}
   - component: {fileID: 114007355425315874}
   - component: {fileID: 4136049641242347682}
@@ -308,8 +310,6 @@ GameObject:
   - component: {fileID: 2936493113668399511}
   - component: {fileID: -1204517828314966158}
   - component: {fileID: 3716997846753568432}
-  - component: {fileID: 5672402815602003514}
-  - component: {fileID: 1669293072939922053}
   - component: {fileID: 992425235403631967}
   m_Layer: 0
   m_Name: Player
@@ -409,6 +409,70 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a1f8b2d70c80dc40bb89da5278b8c3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5443270158730502435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338028093530308318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7464c4ceb85d99343a0a4486c4366719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _skeletonAnimation: {fileID: 4449885042061997883}
+--- !u!114 &1669293072939922053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338028093530308318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6987e68c4f7b7494594aa7283993ebb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dead: {fileID: 11400000, guid: c090cff79a766714d844c3653f8d888d, type: 2}
+  _fall: {fileID: 11400000, guid: 3711df6dd4258514784a498814767830, type: 2}
+  _defense: {fileID: 11400000, guid: def88476bd50e1e43afed82041551988, type: 2}
+  _buff: {fileID: 11400000, guid: f5de47d3d4e96a24d84ed7e4343841b3, type: 2}
+  _changeForm: {fileID: 11400000, guid: 364bce1155c10e64395eef69691e49d0, type: 2}
+  _idleToggle:
+    _primaryAnimation: {fileID: 11400000, guid: 1c721a26004eee0449fbc1e8144a2555, type: 2}
+    "_secon\u0111aryAnimation": {fileID: 11400000, guid: 2b07c1cdfa0c9574aa21e644e6f92c12, type: 2}
+  _moveToggle:
+    _primaryAnimation: {fileID: 11400000, guid: db7e7c1a3cf07b04d9b2ae7210959688, type: 2}
+    "_secon\u0111aryAnimation": {fileID: 11400000, guid: c70cbe7572b068045952ab223e1b67d0, type: 2}
+  _attackCombo:
+    _animationList:
+    - {fileID: 11400000, guid: 120388df3b902cb498d7ae727c5c5907, type: 2}
+    - {fileID: 11400000, guid: d156dac114a958b41a0acecb30da7ee8, type: 2}
+    - {fileID: 11400000, guid: 3f84c29d05eef9a4790ec41d08d3a167, type: 2}
+    - {fileID: 11400000, guid: 7971f2a5b98d0284ea1dc4c48b50ca84, type: 2}
+  _hitCombo:
+    _animationList:
+    - {fileID: 11400000, guid: 763ba55143adddc4bbc9a3c6c4be8386, type: 2}
+    - {fileID: 11400000, guid: 030b54847f008a342945ce44f1222592, type: 2}
+    - {fileID: 11400000, guid: 4b96c6d5055cdc44b901f1e1806bf401, type: 2}
+    - {fileID: 11400000, guid: a1aba66a185b9f44f8741436a22a37f4, type: 2}
+  _skill1Progress:
+    _start: {fileID: 11400000, guid: f8b37ffa45a73bd4e8823175d4d5f6ad, type: 2}
+    _charge: {fileID: 0}
+    _end: {fileID: 11400000, guid: f0d43510fa9298e4a8f8efdbaeda4c20, type: 2}
+  _skill2Progress:
+    _start: {fileID: 11400000, guid: 6de3e32038050d24a9b0583b6fc526c9, type: 2}
+    _charge: {fileID: 11400000, guid: fc39a7117f12ed14fa27bab2a31ce9f9, type: 2}
+    _end: {fileID: 11400000, guid: 9e92ee9ad88fa894dbba65541116212a, type: 2}
+  _skill3Progress:
+    _start: {fileID: 11400000, guid: d1386365c430d334f8db2a87b5801e72, type: 2}
+    _charge: {fileID: 11400000, guid: 120d2793117ef1043819a65fcc4c4e7d, type: 2}
+    _end: {fileID: 11400000, guid: ae59178fac35b694c9f7870b9d9fd513, type: 2}
+  _skill4Progress:
+    _start: {fileID: 0}
+    _charge: {fileID: 0}
+    _end: {fileID: 0}
 --- !u!114 &4395116401505181079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -613,70 +677,6 @@ MonoBehaviour:
   _attackDamages: 10
   _shootPivot: {fileID: 3020250431896813276}
   _animationEventReceiver: {fileID: 0}
---- !u!114 &5672402815602003514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1338028093530308318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b1acdc505fabc14aa32779952cb2b3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _skeletonAnimation: {fileID: 4449885042061997883}
---- !u!114 &1669293072939922053
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1338028093530308318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6987e68c4f7b7494594aa7283993ebb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dead: {fileID: 11400000, guid: c090cff79a766714d844c3653f8d888d, type: 2}
-  _fall: {fileID: 11400000, guid: 3711df6dd4258514784a498814767830, type: 2}
-  _defense: {fileID: 11400000, guid: def88476bd50e1e43afed82041551988, type: 2}
-  _buff: {fileID: 11400000, guid: f5de47d3d4e96a24d84ed7e4343841b3, type: 2}
-  _changeForm: {fileID: 11400000, guid: 364bce1155c10e64395eef69691e49d0, type: 2}
-  _idleToggle:
-    _primaryAnimation: {fileID: 11400000, guid: 1c721a26004eee0449fbc1e8144a2555, type: 2}
-    "_secon\u0111aryAnimation": {fileID: 11400000, guid: 2b07c1cdfa0c9574aa21e644e6f92c12, type: 2}
-  _moveToggle:
-    _primaryAnimation: {fileID: 11400000, guid: db7e7c1a3cf07b04d9b2ae7210959688, type: 2}
-    "_secon\u0111aryAnimation": {fileID: 11400000, guid: c70cbe7572b068045952ab223e1b67d0, type: 2}
-  _attackCombo:
-    _animationList:
-    - {fileID: 11400000, guid: 120388df3b902cb498d7ae727c5c5907, type: 2}
-    - {fileID: 11400000, guid: d156dac114a958b41a0acecb30da7ee8, type: 2}
-    - {fileID: 11400000, guid: 3f84c29d05eef9a4790ec41d08d3a167, type: 2}
-    - {fileID: 11400000, guid: 7971f2a5b98d0284ea1dc4c48b50ca84, type: 2}
-  _hitCombo:
-    _animationList:
-    - {fileID: 11400000, guid: 763ba55143adddc4bbc9a3c6c4be8386, type: 2}
-    - {fileID: 11400000, guid: 030b54847f008a342945ce44f1222592, type: 2}
-    - {fileID: 11400000, guid: 4b96c6d5055cdc44b901f1e1806bf401, type: 2}
-    - {fileID: 11400000, guid: a1aba66a185b9f44f8741436a22a37f4, type: 2}
-  _skill1Progress:
-    _start: {fileID: 11400000, guid: f8b37ffa45a73bd4e8823175d4d5f6ad, type: 2}
-    _charge: {fileID: 0}
-    _end: {fileID: 11400000, guid: f0d43510fa9298e4a8f8efdbaeda4c20, type: 2}
-  _skill2Progress:
-    _start: {fileID: 11400000, guid: 6de3e32038050d24a9b0583b6fc526c9, type: 2}
-    _charge: {fileID: 11400000, guid: fc39a7117f12ed14fa27bab2a31ce9f9, type: 2}
-    _end: {fileID: 11400000, guid: 9e92ee9ad88fa894dbba65541116212a, type: 2}
-  _skill3Progress:
-    _start: {fileID: 11400000, guid: d1386365c430d334f8db2a87b5801e72, type: 2}
-    _charge: {fileID: 11400000, guid: 120d2793117ef1043819a65fcc4c4e7d, type: 2}
-    _end: {fileID: 11400000, guid: ae59178fac35b694c9f7870b9d9fd513, type: 2}
-  _skill4Progress:
-    _start: {fileID: 0}
-    _charge: {fileID: 0}
-    _end: {fileID: 0}
 --- !u!114 &992425235403631967
 MonoBehaviour:
   m_ObjectHideFlags: 0

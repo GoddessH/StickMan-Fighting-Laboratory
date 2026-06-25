@@ -6,9 +6,13 @@ public class FlyController : MonoBehaviour, IFlyChecker
     [SerializeField] private LayerMask _groundMask;
     [SerializeField] private float _flyThreshold = 1.8f;
 
-    private bool _isFly = false;
+    private bool _isFly;
 
-    private void Update()
+    private void Start() => CheckFly();
+
+    private void Update() => CheckFly();
+
+    private void CheckFly()
     {
         RaycastHit2D rayHit = Physics2D.Raycast(transform.position, Vector2.down, _flyThreshold, _groundMask);
         if (rayHit.collider != null) _isFly = false;

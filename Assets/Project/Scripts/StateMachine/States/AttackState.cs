@@ -26,7 +26,8 @@ public class AttackState : State
         }
 
         _comboCount = 0;
-        _currentTrack = _animationHandler.SetAnimation(_animationHandler.Library.AttackCombo[_comboCount], false);
+        _animationHandler.SetAnimation(_animationHandler.Library.AttackCombo[_comboCount], false);
+        _currentTrack = _animationHandler.GetCurrentTrack();
     }
     public override void UpdateState()
     {
@@ -37,8 +38,11 @@ public class AttackState : State
         }
 
         float currentPercent = _currentTrack.AnimationTime / _currentTrack.Animation.Duration;
-        if (_comboWindow.IsInRange(currentPercent) && _onCheckInput != null && _onCheckInput.Invoke()) 
-            _currentTrack = _animationHandler.SetAnimation(_animationHandler.Library.AttackCombo[++_comboCount], false);
+        if (_comboWindow.IsInRange(currentPercent) && _onCheckInput != null && _onCheckInput.Invoke())
+        {
+            _animationHandler.SetAnimation(_animationHandler.Library.AttackCombo[++_comboCount], false);
+            _currentTrack = _animationHandler.GetCurrentTrack();
+        }
 
     }
     public override void ExitState()

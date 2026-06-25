@@ -1,6 +1,7 @@
 using Spine;
 using Spine.Unity;
 using UnityEngine;
+using Photon.Pun;
 
 [RequireComponent(typeof(AnimationAssetLibrary))]
 public class AnimationHandle : MonoBehaviour
@@ -11,11 +12,17 @@ public class AnimationHandle : MonoBehaviour
 
     public AnimationAssetLibrary Library => _library = ComponentEnsurer.EnsureComponent(GetComponent<AnimationAssetLibrary>(), gameObject);
 
-    public TrackEntry SetAnimation(AnimationReferenceAsset animation, bool isLoop)
+    protected void SetAnimationLocal(string animationName, bool isLoop)
     {
-        if (_skeletonAnimation == null || animation == null) return null;
+        if (_skeletonAnimation == null) return;
 
-        return _skeletonAnimation.AnimationState.SetAnimation(0, animation, isLoop);
+        _skeletonAnimation.AnimationState.SetAnimation(0, animationName, isLoop);
+    }
+
+    public virtual void SetAnimation(AnimationReferenceAsset animation, bool isLoop)
+    {
+        if (animation == null) return;
+        SetAnimationLocal(animation.name, isLoop);
     }
 
     public bool IsCurrentAnimationName(AnimationReferenceAsset animation)

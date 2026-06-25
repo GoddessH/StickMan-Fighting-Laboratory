@@ -16,7 +16,9 @@ public class HurtState : State
     }
     public override void EnterState()
     {
-        _currentTrack = _animationHandler.SetAnimation(_animationHandler.Library.HitCombo[0], false);
+        _animationHandler.SetAnimation(_animationHandler.Library.HitCombo[0], false);
+        _currentTrack = _animationHandler.GetCurrentTrack();
+
         if (_currentTrack != null) _currentTrack.Complete += HurtState_Complete;
 
         if (_onGetLastDamages != null) 
